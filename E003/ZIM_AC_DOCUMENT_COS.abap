@@ -83,7 +83,9 @@ CLASS zcl_im_ac_document_cos IMPLEMENTATION.
       " Check if this is a trigger G/L account
       IF ls_accit-hkont IS NOT INITIAL.
         " Get mapping to check if this is a trigger G/L
-        SELECT SINGLE * FROM zcos_map INTO @DATA(ls_map)
+        SELECT SINGLE client, bukrs, trigger_gl, product_code, valid_from, valid_to,
+                      sales_gl, cos_gl, margin_pct, created_by, created_at, deleted
+          FROM zcos_map INTO @DATA(ls_map)
           WHERE bukrs = @c_document-header-bukrs
             AND trigger_gl = @ls_accit-hkont
             AND valid_from <= @sy-datum
@@ -160,7 +162,7 @@ CLASS zcl_im_ac_document_cos IMPLEMENTATION.
     DATA: lv_e008_status TYPE char1.
     
     " Placeholder - implement based on E008's validation result storage
-    SELECT SINGLE e008_status FROM zcos_e008_status INTO lv_e008_status
+    SELECT SINGLE e008_status FROM zcos_e008_status INTO @lv_e008_status
       WHERE bukrs = @iv_bukrs
         AND gjahr = @iv_gjahr
         AND belnr = @iv_belnr.

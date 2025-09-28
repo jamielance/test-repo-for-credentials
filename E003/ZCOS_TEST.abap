@@ -144,7 +144,9 @@ FORM test_cos_posting.
   WAIT UP TO 5 SECONDS.
 
   " Check if COS document was created
-  SELECT SINGLE * FROM zcos_aud INTO @DATA(ls_audit)
+  SELECT SINGLE client, guid, bukrs, gjahr, belnr_cos, belnr_src, cos_amount, 
+                status, posted_at, posted_by, reversal_doc, reversal_gjahr
+    FROM zcos_aud INTO @DATA(ls_audit)
     WHERE belnr_src = @lv_belnr
       AND gjahr = @lv_gjahr.
 

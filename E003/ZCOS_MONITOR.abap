@@ -24,7 +24,9 @@ DATA: gt_monitor_data TYPE TABLE OF ty_monitor_data,
       gv_bukrs        TYPE bukrs,
       gv_status       TYPE char1,
       gv_from_date    TYPE dats,
-      gv_to_date      TYPE dats.
+      gv_to_date      TYPE dats,
+      gv_count        TYPE i,
+      gv_total_amount TYPE dmbtr.
 
 SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE TEXT-001.
   SELECT-OPTIONS: s_bukrs FOR gv_bukrs,
@@ -50,6 +52,16 @@ AT SELECTION-SCREEN.
   ENDIF.
 
 START-OF-SELECTION.
+  " Check authorization for monitoring
+  AUTHORITY-CHECK OBJECT 'ZCOS_MONITOR'
+    ID 'ACTVT' FIELD '03'
+    ID 'APPL' FIELD 'ZCOS'.
+  
+  IF sy-subrc <> 0.
+    MESSAGE e008(zcos) WITH 'Authorization check failed for monitoring'.
+    RETURN.
+  ENDIF.
+
   PERFORM get_monitor_data.
   PERFORM display_results.
 
@@ -64,20 +76,24 @@ FORM get_monitor_data.
 
   " Get outbox data
   IF p_outbox = 'X'.
-    SELECT * FROM zcos_outbox INTO TABLE lt_outbox
-      WHERE bukrs IN s_bukrs
-        AND status IN s_status
-        AND created_at >= cl_abap_tstmp=>tstmp2utc( cl_abap_tstmp=>create( date = gv_from_date time = '000000' ) )
-        AND created_at <= cl_abap_tstmp=>tstmp2utc( cl_abap_tstmp=>create( date = gv_to_date time = '235959' ) ).
+    SELECT client, guid, bukrs, gjahr, belnr_src, trigger_gl, product_code, 
+           total_charge, status, error_message, created_at, processed_at
+      FROM zcos_outbox INTO TABLE @lt_outbox
+      WHERE bukrs IN @s_bukrs
+        AND status IN @s_status
+        AND created_at >= @cl_abap_tstmp=>tstmp2utc( @cl_abap_tstmp=>create( date = @gv_from_date time = '000000' ) )
+        AND created_at <= @cl_abap_tstmp=>tstmp2utc( @cl_abap_tstmp=>create( date = @gv_to_date time = '235959' ) ).
   ENDIF.
 
   " Get audit data
   IF p_audit = 'X'.
-    SELECT * FROM zcos_aud INTO TABLE lt_audit
-      WHERE bukrs IN s_bukrs
-        AND status IN s_status
-        AND posted_at >= cl_abap_tstmp=>tstmp2utc( cl_abap_tstmp=>create( date = gv_from_date time = '000000' ) )
-        AND posted_at <= cl_abap_tstmp=>tstmp2utc( cl_abap_tstmp=>create( date = gv_to_date time = '235959' ) ).
+    SELECT client, guid, bukrs, gjahr, belnr_cos, belnr_src, cos_amount, 
+           status, posted_at, posted_by, reversal_doc, reversal_gjahr
+      FROM zcos_aud INTO TABLE @lt_audit
+      WHERE bukrs IN @s_bukrs
+        AND status IN @s_status
+        AND posted_at >= @cl_abap_tstmp=>tstmp2utc( @cl_abap_tstmp=>create( date = @gv_from_date time = '000000' ) )
+        AND posted_at <= @cl_abap_tstmp=>tstmp2utc( @cl_abap_tstmp=>create( date = @gv_to_date time = '235959' ) ).
   ENDIF.
 
   " Combine data
@@ -131,21 +147,19 @@ ENDFORM.
 *& Form DISPLAY_RESULTS
 *&---------------------------------------------------------------------*
 FORM display_results.
-  DATA: lv_count TYPE i,
-        lv_total_amount TYPE dmbtr.
-
   " Count records
-  DESCRIBE TABLE gt_monitor_data LINES lv_count.
+  DESCRIBE TABLE gt_monitor_data LINES gv_count.
 
   " Calculate total amount
+  CLEAR gv_total_amount.
   LOOP AT gt_monitor_data INTO gs_monitor_data.
-    lv_total_amount = lv_total_amount + gs_monitor_data-cos_amount.
+    gv_total_amount = gv_total_amount + gs_monitor_data-cos_amount.
   ENDLOOP.
 
   " Display summary
   WRITE: / 'COS Auto Posting Monitor',
-         / 'Records found:', lv_count,
-         / 'Total COS amount:', lv_total_amount CURRENCY 'GBP',
+         / 'Records found:', gv_count,
+         / 'Total COS amount:', gv_total_amount CURRENCY 'GBP',
          /.
 
   " Display details
