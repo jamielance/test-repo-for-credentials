@@ -1,0 +1,24 @@
+*&---------------------------------------------------------------------*
+*& Table: ZCOS_MAP
+*& Description: Mapping table for Cost of Sales Auto Posting
+*&---------------------------------------------------------------------*
+@EndUserText.label : 'COS Mapping Table'
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define table zcos_map {
+  key client            : mandt not null;
+  key bukrs             : bukrs not null;
+  key trigger_gl        : saknr not null;
+  key product_code      : char20 not null;
+  key valid_from        : dats not null;
+  key valid_to          : dats not null;
+  sales_gl              : saknr not null;
+  cos_gl                : saknr not null;
+  margin_pct            : dec5_2;
+  created_by            : syuname;
+  created_at            : timestampl;
+  changed_by            : syuname;
+  changed_at            : timestampl;
+  deleted               : abap_bool;
+}

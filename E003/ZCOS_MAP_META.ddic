@@ -1,0 +1,172 @@
+*&---------------------------------------------------------------------*
+*& Metadata Extension: ZCOS_MAP_META
+*& Description: Metadata for COS Mapping Fiori App
+*&---------------------------------------------------------------------*
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+    typeName: 'COS Mapping',
+    typeNamePlural: 'COS Mappings',
+    title: {
+      type: #STANDARD,
+      value: 'product_code'
+    }
+  }
+}
+annotate view ZCOS_MAP_CDS with
+{
+  @UI.facet: [ {
+    id: 'idIdentification',
+    type: #IDENTIFICATION_REFERENCE,
+    label: 'Identification',
+    position: 10
+  }, {
+    id: 'idData',
+    type: #FIELDGROUP_REFERENCE,
+    label: 'Data',
+    targetQualifier: 'Data',
+    position: 20
+  } ]
+  
+  @UI: {
+    lineItem: [ {
+      position: 10,
+      importance: #HIGH
+    } ],
+    identification: [ {
+      position: 10,
+      label: 'Company Code'
+    } ],
+    fieldGroup: [ {
+      qualifier: 'Data',
+      position: 10,
+      label: 'Data'
+    } ]
+  }
+  bukrs;
+  
+  @UI: {
+    lineItem: [ {
+      position: 20,
+      importance: #HIGH
+    } ],
+    identification: [ {
+      position: 20,
+      label: 'Trigger G/L'
+    } ],
+    fieldGroup: [ {
+      qualifier: 'Data',
+      position: 20,
+      label: 'Data'
+    } ]
+  }
+  trigger_gl;
+  
+  @UI: {
+    lineItem: [ {
+      position: 30,
+      importance: #HIGH
+    } ],
+    identification: [ {
+      position: 30,
+      label: 'Product Code'
+    } ],
+    fieldGroup: [ {
+      qualifier: 'Data',
+      position: 30,
+      label: 'Data'
+    } ]
+  }
+  product_code;
+  
+  @UI: {
+    lineItem: [ {
+      position: 40,
+      importance: #MEDIUM
+    } ],
+    identification: [ {
+      position: 40,
+      label: 'Valid From'
+    } ],
+    fieldGroup: [ {
+      qualifier: 'Data',
+      position: 40,
+      label: 'Data'
+    } ]
+  }
+  valid_from;
+  
+  @UI: {
+    lineItem: [ {
+      position: 50,
+      importance: #MEDIUM
+    } ],
+    identification: [ {
+      position: 50,
+      label: 'Valid To'
+    } ],
+    fieldGroup: [ {
+      qualifier: 'Data',
+      position: 50,
+      label: 'Data'
+    } ]
+  }
+  valid_to;
+  
+  @UI: {
+    lineItem: [ {
+      position: 60,
+      importance: #HIGH
+    } ],
+    fieldGroup: [ {
+      qualifier: 'Data',
+      position: 60,
+      label: 'Data'
+    } ]
+  }
+  sales_gl;
+  
+  @UI: {
+    lineItem: [ {
+      position: 70,
+      importance: #HIGH
+    } ],
+    fieldGroup: [ {
+      qualifier: 'Data',
+      position: 70,
+      label: 'Data'
+    } ]
+  }
+  cos_gl;
+  
+  @UI: {
+    lineItem: [ {
+      position: 80,
+      importance: #LOW
+    } ],
+    fieldGroup: [ {
+      qualifier: 'Data',
+      position: 80,
+      label: 'Data'
+    } ]
+  }
+  margin_pct;
+  
+  @UI.hidden: true
+  client;
+  
+  @UI.hidden: true
+  created_by;
+  
+  @UI.hidden: true
+  created_at;
+  
+  @UI.hidden: true
+  changed_by;
+  
+  @UI.hidden: true
+  changed_at;
+  
+  @UI.hidden: true
+  deleted;
+}

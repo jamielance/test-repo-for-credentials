@@ -1,0 +1,23 @@
+*&---------------------------------------------------------------------*
+*& Table: ZCOS_OUTBOX
+*& Description: Outbox payload for COS posting
+*&---------------------------------------------------------------------*
+@EndUserText.label : 'COS Outbox Table'
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define table zcos_outbox {
+  key client            : mandt not null;
+  key guid              : sysuuid_x16 not null;
+  bukrs                 : bukrs not null;
+  gjahr                 : gjahr not null;
+  belnr_src             : belnr_d not null;
+  trigger_gl            : saknr not null;
+  product_code          : char20 not null;
+  total_charge          : dmbtr;
+  cos_amount            : dmbtr;
+  created_at            : timestampl;
+  processed_at          : timestampl;
+  status                : char1;
+  error_message         : char255;
+}

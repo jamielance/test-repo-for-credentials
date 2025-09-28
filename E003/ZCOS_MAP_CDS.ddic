@@ -1,0 +1,35 @@
+*&---------------------------------------------------------------------*
+*& CDS View: ZCOS_MAP_CDS
+*& Description: CDS View for COS Mapping Table
+*&---------------------------------------------------------------------*
+@EndUserText.label: 'COS Mapping CDS View'
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'COS Mapping'
+define view entity ZCOS_MAP_CDS
+  as select from zcos_map as _map
+  association [0..1] to t001 as _company on _map.bukrs = _company.bukrs
+  association [0..1] to ska1 as _trigger_gl on _map.trigger_gl = _trigger_gl.saknr
+  association [0..1] to ska1 as _sales_gl on _map.sales_gl = _sales_gl.saknr
+  association [0..1] to ska1 as _cos_gl on _map.cos_gl = _cos_gl.saknr
+{
+  key _map.client,
+  key _map.bukrs,
+  key _map.trigger_gl,
+  key _map.product_code,
+  key _map.valid_from,
+  key _map.valid_to,
+      _map.sales_gl,
+      _map.cos_gl,
+      _map.margin_pct,
+      _map.created_by,
+      _map.created_at,
+      _map.changed_by,
+      _map.changed_at,
+      _map.deleted,
+      
+      /* Associations */
+      _company,
+      _trigger_gl,
+      _sales_gl,
+      _cos_gl
+}

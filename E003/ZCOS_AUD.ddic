@@ -1,0 +1,22 @@
+*&---------------------------------------------------------------------*
+*& Table: ZCOS_AUD
+*& Description: Audit table for idempotency and tracking
+*&---------------------------------------------------------------------*
+@EndUserText.label : 'COS Audit Table'
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define table zcos_aud {
+  key client            : mandt not null;
+  key guid              : sysuuid_x16 not null;
+  bukrs                 : bukrs not null;
+  belnr_cos             : belnr_d not null;
+  gjahr                 : gjahr not null;
+  belnr_src             : belnr_d not null;
+  posted_at             : timestampl;
+  posted_by             : syuname;
+  cos_amount            : dmbtr;
+  status                : char1;
+  reversal_doc          : belnr_d;
+  reversal_gjahr        : gjahr;
+}
