@@ -197,7 +197,7 @@ CLASS zcl_tc_cos_integration IMPLEMENTATION.
     " Clean up test data
     DELETE FROM zcos_outbox WHERE guid LIKE 'INTEGRATION%' OR guid LIKE 'TEST%'.
     DELETE FROM zcos_map WHERE product_code LIKE 'INTEGRATION%' OR product_code LIKE 'TEST%'.
-    DELETE FROM zcos_aud WHERE guid LIKE 'INTEGRATION%' OR guid LIKE 'TEST%'.
+    DELETE FROM zcos_audit WHERE guid LIKE 'INTEGRATION%' OR guid LIKE 'TEST%'.
     DELETE FROM tvarvc WHERE name LIKE 'ZCOS_TEST_%'.
     COMMIT WORK.
   ENDMETHOD.

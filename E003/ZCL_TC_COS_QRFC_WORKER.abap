@@ -338,7 +338,7 @@ CLASS zcl_tc_cos_qrfc_worker IMPLEMENTATION.
     " Clean up test data
     DELETE FROM zcos_outbox WHERE guid LIKE '1234567890123456'.
     DELETE FROM zcos_map WHERE product_code = 'TEST001'.
-    DELETE FROM zcos_aud WHERE guid LIKE '1234567890123456'.
+    DELETE FROM zcos_audit WHERE guid LIKE '1234567890123456'.
     COMMIT WORK.
   ENDMETHOD.
 
@@ -381,7 +381,7 @@ CLASS zcl_tc_cos_qrfc_worker IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD create_test_audit_entry.
-    DATA: ls_audit TYPE zcos_aud.
+    DATA: ls_audit TYPE zcos_audit.
 
     ls_audit-client = sy-mandt.
     ls_audit-guid = iv_guid.
@@ -393,7 +393,7 @@ CLASS zcl_tc_cos_qrfc_worker IMPLEMENTATION.
     ls_audit-cos_amount = '1000.00'.
     ls_audit-status = 'P'.
 
-    INSERT zcos_aud FROM ls_audit.
+    INSERT zcos_audit FROM ls_audit.
     COMMIT WORK.
   ENDMETHOD.
 

@@ -146,7 +146,7 @@ FORM test_cos_posting.
   " Check if COS document was created
   SELECT SINGLE client, guid, bukrs, gjahr, belnr_cos, belnr_src, cos_amount, 
                 status, posted_at, posted_by, reversal_doc, reversal_gjahr
-    FROM zcos_aud INTO @DATA(ls_audit)
+    FROM zcos_audit INTO @DATA(ls_audit)
     WHERE belnr_src = @lv_belnr
       AND gjahr = @lv_gjahr.
 
@@ -166,7 +166,7 @@ FORM cleanup_test_data.
   " Clean up test data
   DELETE FROM zcos_map WHERE created_by = sy-uname.
   DELETE FROM zcos_outbox WHERE created_at >= cl_abap_tstmp=>utc2tstmp( cl_abap_tstmp=>create( date = sy-datum time = '000000' ) ).
-  DELETE FROM zcos_aud WHERE posted_by = sy-uname.
+  DELETE FROM zcos_audit WHERE posted_by = sy-uname.
 
   COMMIT WORK.
 

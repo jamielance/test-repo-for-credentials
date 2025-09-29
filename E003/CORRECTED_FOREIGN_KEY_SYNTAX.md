@@ -50,30 +50,30 @@ foreign key [0..1,1..1] zcos_map
 #### **1. Company Code Reference (T001)**
 ```abap
 foreign key [0..1,1..1] t001
-  references t001 on zcos_aud.bukrs = t001.bukrs
-  and zcos_aud.client = t001.mandt;
+  references t001 on zcos_audit.bukrs = t001.bukrs
+  and zcos_audit.client = t001.mandt;
 ```
 
 #### **2. Outbox Reference (ZCOS_OUTBOX)**
 ```abap
 foreign key [0..1,1..1] zcos_outbox
-  references zcos_outbox on zcos_aud.guid = zcos_outbox.guid
-  and zcos_aud.client = zcos_outbox.client;
+  references zcos_outbox on zcos_audit.guid = zcos_outbox.guid
+  and zcos_audit.client = zcos_outbox.client;
 ```
 
 #### **3. User Reference - Posted By (USR21)**
 ```abap
 foreign key [0..1,1..1] usr21
-  references usr21 on zcos_aud.posted_by = usr21.bname;
+  references usr21 on zcos_audit.posted_by = usr21.bname;
 ```
 
 #### **4. COS Document Reference (BKPF)**
 ```abap
 foreign key [0..1,1..1] bkpf_cos
-  references bkpf on zcos_aud.belnr_cos = bkpf.belnr
-  and zcos_aud.gjahr = bkpf.gjahr
-  and zcos_aud.bukrs = bkpf.bukrs
-  and zcos_aud.client = bkpf.mandt;
+  references bkpf on zcos_audit.belnr_cos = bkpf.belnr
+  and zcos_audit.gjahr = bkpf.gjahr
+  and zcos_audit.bukrs = bkpf.bukrs
+  and zcos_audit.client = bkpf.mandt;
 ```
 
 ### **ZCOS_MAP Table**

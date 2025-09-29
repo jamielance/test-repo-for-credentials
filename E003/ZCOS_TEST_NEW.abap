@@ -180,7 +180,7 @@ CLASS zcl_cos_test_runner IMPLEMENTATION.
     " Clean up all test data
     DELETE FROM zcos_map WHERE created_by = sy-uname OR product_code LIKE 'TEST%'.
     DELETE FROM zcos_outbox WHERE created_at >= cl_abap_tstmp=>utc2tstmp( @cl_abap_tstmp=>create( date = @sy-datum time = '000000' ) ).
-    DELETE FROM zcos_aud WHERE posted_by = sy-uname.
+    DELETE FROM zcos_audit WHERE posted_by = sy-uname.
     DELETE FROM tvarvc WHERE name LIKE 'ZCOS_TEST_%'.
 
     COMMIT WORK.

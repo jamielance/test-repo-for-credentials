@@ -89,7 +89,7 @@ SELECT SINGLE total_charge_currency, cos_amount_currency
 
 " Check audit currency
 SELECT SINGLE cos_amount_currency 
-  FROM zcos_aud 
+  FROM zcos_audit 
   WHERE guid = 'your-guid'.
 ```
 

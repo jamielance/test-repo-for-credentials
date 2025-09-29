@@ -50,8 +50,8 @@ foreign key [0..1,1..1] zcos_map
 #### **1. Company Code Reference (T001)**
 ```abap
 foreign key [0..1,1..1] t001
-  left join to t001 on zcos_aud.bukrs = t001.bukrs
-  and zcos_aud.client = t001.mandt;
+  left join to t001 on zcos_audit.bukrs = t001.bukrs
+  and zcos_audit.client = t001.mandt;
 ```
 - **Purpose**: Ensures company code exists and is valid
 - **Cardinality**: 0..1 to 1..1 (optional to mandatory)
@@ -59,8 +59,8 @@ foreign key [0..1,1..1] t001
 #### **2. Outbox Reference (ZCOS_OUTBOX)**
 ```abap
 foreign key [0..1,1..1] zcos_outbox
-  left join to zcos_outbox on zcos_aud.guid = zcos_outbox.guid
-  and zcos_aud.client = zcos_outbox.client;
+  left join to zcos_outbox on zcos_audit.guid = zcos_outbox.guid
+  and zcos_audit.client = zcos_outbox.client;
 ```
 - **Purpose**: Links audit entry to original outbox entry
 - **Cardinality**: 0..1 to 1..1 (optional to mandatory)
@@ -69,7 +69,7 @@ foreign key [0..1,1..1] zcos_outbox
 #### **3. User Reference - Posted By (USR21)**
 ```abap
 foreign key [0..1,1..1] usr21
-  left join to usr21 on zcos_aud.posted_by = usr21.bname;
+  left join to usr21 on zcos_audit.posted_by = usr21.bname;
 ```
 - **Purpose**: Ensures user exists in the system
 - **Cardinality**: 0..1 to 1..1 (optional to mandatory)
@@ -77,10 +77,10 @@ foreign key [0..1,1..1] usr21
 #### **4. COS Document Reference (BKPF)**
 ```abap
 foreign key [0..1,1..1] bkpf_cos
-  left join to bkpf on zcos_aud.belnr_cos = bkpf.belnr
-  and zcos_aud.gjahr = bkpf.gjahr
-  and zcos_aud.bukrs = bkpf.bukrs
-  and zcos_aud.client = bkpf.mandt;
+  left join to bkpf on zcos_audit.belnr_cos = bkpf.belnr
+  and zcos_audit.gjahr = bkpf.gjahr
+  and zcos_audit.bukrs = bkpf.bukrs
+  and zcos_audit.client = bkpf.mandt;
 ```
 - **Purpose**: Links to the generated COS document
 - **Cardinality**: 0..1 to 1..1 (optional to mandatory)
@@ -88,10 +88,10 @@ foreign key [0..1,1..1] bkpf_cos
 #### **5. Source Document Reference (BKPF)**
 ```abap
 foreign key [0..1,1..1] bkpf_src
-  left join to bkpf on zcos_aud.belnr_src = bkpf.belnr
-  and zcos_aud.gjahr = bkpf.gjahr
-  and zcos_aud.bukrs = bkpf.bukrs
-  and zcos_aud.client = bkpf.mandt;
+  left join to bkpf on zcos_audit.belnr_src = bkpf.belnr
+  and zcos_audit.gjahr = bkpf.gjahr
+  and zcos_audit.bukrs = bkpf.bukrs
+  and zcos_audit.client = bkpf.mandt;
 ```
 - **Purpose**: Links to the original source document
 - **Cardinality**: 0..1 to 1..1 (optional to mandatory)
@@ -99,10 +99,10 @@ foreign key [0..1,1..1] bkpf_src
 #### **6. Reversal Document Reference (BKPF)**
 ```abap
 foreign key [0..1,1..1] bkpf_reversal
-  left join to bkpf on zcos_aud.reversal_doc = bkpf.belnr
-  and zcos_aud.reversal_gjahr = bkpf.gjahr
-  and zcos_aud.bukrs = bkpf.bukrs
-  and zcos_aud.client = bkpf.mandt;
+  left join to bkpf on zcos_audit.reversal_doc = bkpf.belnr
+  and zcos_audit.reversal_gjahr = bkpf.gjahr
+  and zcos_audit.bukrs = bkpf.bukrs
+  and zcos_audit.client = bkpf.mandt;
 ```
 - **Purpose**: Links to reversal document if applicable
 - **Cardinality**: 0..1 to 1..1 (optional to mandatory)

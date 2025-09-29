@@ -498,7 +498,7 @@ CLASS zcl_cos_qrfc_worker IMPLEMENTATION.
 
   METHOD check_duplicate_processing.
     " Note: ZCOS_AUD is custom table, no standard VDM view available
-    SELECT SINGLE client FROM zcos_aud
+    SELECT SINGLE client FROM zcos_audit
       INTO @DATA(lv_client)
       WHERE guid = @iv_guid.
     
@@ -625,7 +625,7 @@ CLASS zcl_cos_qrfc_worker IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD create_audit_entry.
-    DATA: ls_audit TYPE zcos_aud.
+    DATA: ls_audit TYPE zcos_audit.
 
     ls_audit-client = sy-mandt.
     ls_audit-guid = iv_guid.
@@ -639,7 +639,7 @@ CLASS zcl_cos_qrfc_worker IMPLEMENTATION.
     ls_audit-cos_amount_currency = iv_cos_currency.
     ls_audit-status = 'P'.
 
-    INSERT zcos_aud FROM ls_audit.
+    INSERT zcos_audit FROM ls_audit.
     rv_success = COND #( WHEN sy-subrc = 0 THEN abap_true ELSE abap_false ).
 
     IF rv_success = abap_true.

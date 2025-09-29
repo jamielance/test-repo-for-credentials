@@ -63,7 +63,7 @@ CALL FUNCTION 'ZCOS_IS_FEATURE_ACTIVE'
 
 " Verify tables exist
 SELECT COUNT(*) FROM zcos_outbox.
-SELECT COUNT(*) FROM zcos_aud.
+SELECT COUNT(*) FROM zcos_audit.
 SELECT COUNT(*) FROM zcos_map.
 ```
 
@@ -115,7 +115,7 @@ SELECT COUNT(*) FROM zcos_map.
 ```abap
 " Check all components
 SELECT COUNT(*) FROM zcos_outbox.
-SELECT COUNT(*) FROM zcos_aud.
+SELECT COUNT(*) FROM zcos_audit.
 SELECT COUNT(*) FROM zcos_map.
 
 " Check classes exist

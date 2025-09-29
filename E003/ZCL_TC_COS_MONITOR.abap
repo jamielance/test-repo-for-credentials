@@ -202,7 +202,7 @@ CLASS zcl_tc_cos_monitor IMPLEMENTATION.
   METHOD cleanup_test_data.
     " Clean up test data
     DELETE FROM zcos_outbox WHERE guid LIKE 'TEST%'.
-    DELETE FROM zcos_aud WHERE guid LIKE 'TEST%'.
+    DELETE FROM zcos_audit WHERE guid LIKE 'TEST%'.
     COMMIT WORK.
   ENDMETHOD.
 
@@ -234,7 +234,7 @@ CLASS zcl_tc_cos_monitor IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD create_test_audit_data.
-    DATA: ls_audit TYPE zcos_aud.
+    DATA: ls_audit TYPE zcos_audit.
 
     " Create test audit entry
     ls_audit-client = sy-mandt.
@@ -248,7 +248,7 @@ CLASS zcl_tc_cos_monitor IMPLEMENTATION.
     ls_audit-posted_at = cl_abap_tstmp=>utc2tstmp( cl_abap_tstmp=>get_utc( ) ).
     ls_audit-posted_by = sy-uname.
 
-    INSERT zcos_aud FROM ls_audit.
+    INSERT zcos_audit FROM ls_audit.
 
     COMMIT WORK.
   ENDMETHOD.

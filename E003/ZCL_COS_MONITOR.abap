@@ -309,7 +309,7 @@ CLASS zcl_cos_monitor IMPLEMENTATION.
     " Note: ZCOS_AUD is custom table, no standard VDM view available
     SELECT guid, bukrs, gjahr, belnr_cos, belnr_src, cos_amount, cos_amount_currency,
            status, posted_at, posted_by, reversal_doc, reversal_gjahr
-      FROM zcos_aud INTO TABLE @DATA(lt_audit)
+      FROM zcos_audit INTO TABLE @DATA(lt_audit)
       WHERE bukrs IN @it_bukrs_range
         AND status IN @it_status_range
         AND posted_at >= @cl_abap_tstmp=>tstmp2utc( @cl_abap_tstmp=>create( date = @iv_from_date time = '000000' ) )
