@@ -1,0 +1,44 @@
+﻿*&---------------------------------------------------------------------*
+*& CDS View: ZCOS_AUDIT_MONITOR_CDS
+*& Description: RAP CDS View for COS Audit Monitoring
+*&---------------------------------------------------------------------*
+@EndUserText.label: 'COS Audit Monitor'
+@AccessControl.authorizationCheck: #CHECK
+@Metadata.ignorePropagatedAnnotations: true
+@ObjectModel.usageType: {
+  serviceQuality: #X,
+  sizeCategory: #S,
+  dataClass: #MIXED
+}
+@Search.searchable: true
+define view entity ZCOS_AUDIT_MONITOR_CDS
+  as select from zcos_audit as _audit
+  association [0..1] to t001 as _company on _audit.bukrs = _company.bukrs
+  association [0..1] to usr21 as _posted_by on _audit.posted_by = _posted_by.bname
+  association [0..1] to bkpf as _cos_doc on _audit.belnr_cos = _cos_doc.belnr
+    and _audit.bukrs = _cos_doc.bukrs
+    and _audit.gjahr = _cos_doc.gjahr
+  association [0..1] to bkpf as _src_doc on _audit.belnr_src = _src_doc.belnr
+    and _audit.bukrs = _src_doc.bukrs
+    and _audit.gjahr = _src_doc.gjahr
+{
+  key _audit.client,
+  key _audit.guid,
+      _audit.bukrs,
+      _audit.gjahr,
+      _audit.belnr_cos,
+      _audit.belnr_src,
+      _audit.cos_amount,
+      _audit.cos_amount_currency,
+      _audit.status,
+      _audit.posted_at,
+      _audit.posted_by,
+      _audit.reversal_doc,
+      _audit.reversal_gjahr,
+      
+      /* Associations */
+      _company,
+      _posted_by,
+      _cos_doc,
+      _src_doc
+}

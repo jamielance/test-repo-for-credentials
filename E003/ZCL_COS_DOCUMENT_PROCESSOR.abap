@@ -63,14 +63,14 @@ CLASS zcl_cos_document_processor DEFINITION
           io_logger TYPE REF TO zif_cos_logger OPTIONAL,
 
       "! <p class="shorttext synchronized">Process document</p>
-    "! <p>Main processing method that handles a single ACDOCA document.
+    "! <p>Main processing method that handles a single FI document.
     "! Performs feature checks, validation, mapping lookup, and outbox creation.
     "! This is the core method called by the BAdI implementation.</p>
-    "! @parameter iv_document | <p class="shorttext synchronized">ACDOCA document to process</p>
+    "! @parameter iv_document | <p class="shorttext synchronized">FI document to process</p>
     "! @parameter rv_result | <p class="shorttext synchronized">Processing result with GUID</p>
       process_document
         IMPORTING
-          iv_document TYPE acdoca
+          iv_document TYPE accit
         RETURNING
           VALUE(rv_result) TYPE ty_processing_result.
 
@@ -108,36 +108,36 @@ CLASS zcl_cos_document_processor DEFINITION
           VALUE(rv_passed) TYPE abap_bool,
 
       "! <p class="shorttext synchronized">Find trigger G/L account</p>
-      "! <p>Identifies the trigger G/L account from the ACDOCA entries
+      "! <p>Identifies the trigger G/L account from the FI document entries
       "! that should initiate COS processing based on business rules.</p>
-      "! @parameter it_accit | <p class="shorttext synchronized">ACDOCA entries to analyze</p>
+      "! @parameter it_accit | <p class="shorttext synchronized">FI document entries to analyze</p>
       "! @parameter rv_trigger_gl | <p class="shorttext synchronized">Trigger G/L account found</p>
       find_trigger_gl
         IMPORTING
-          it_accit TYPE acdoca_t
+          it_accit TYPE accit_t
         RETURNING
           VALUE(rv_trigger_gl) TYPE saknr,
 
       "! <p class="shorttext synchronized">Extract product code</p>
-      "! <p>Extracts the product code from the ACDOCA entry
+      "! <p>Extracts the product code from the FI document entry
       "! for mapping lookup and COS calculation.</p>
-      "! @parameter is_accit | <p class="shorttext synchronized">ACDOCA entry to extract from</p>
+      "! @parameter is_accit | <p class="shorttext synchronized">FI document entry to extract from</p>
       "! @parameter rv_product_code | <p class="shorttext synchronized">Extracted product code</p>
       extract_product_code
         IMPORTING
-          is_accit TYPE acdoca
+          is_accit TYPE accit
         RETURNING
           VALUE(rv_product_code) TYPE char20,
 
       "! <p class="shorttext synchronized">Calculate total charge</p>
-      "! <p>Calculates the total charge amount from ACDOCA entries
+      "! <p>Calculates the total charge amount from FI document entries
       "! for the specified trigger G/L account.</p>
-      "! @parameter it_accit | <p class="shorttext synchronized">ACDOCA entries to sum</p>
+      "! @parameter it_accit | <p class="shorttext synchronized">FI document entries to sum</p>
       "! @parameter iv_trigger_gl | <p class="shorttext synchronized">Trigger G/L account</p>
       "! @parameter rv_total_charge | <p class="shorttext synchronized">Total charge amount</p>
       calculate_total_charge
         IMPORTING
-          it_accit TYPE acdoca_t
+          it_accit TYPE accit_t
           iv_trigger_gl TYPE saknr
         RETURNING
           VALUE(rv_total_charge) TYPE dmbtr,

@@ -1,0 +1,40 @@
+﻿*&---------------------------------------------------------------------*
+*& CDS View: ZCOS_OUTBOX_MONITOR_CDS
+*& Description: RAP CDS View for COS Outbox Monitoring
+*&---------------------------------------------------------------------*
+@EndUserText.label: 'COS Outbox Monitor'
+@AccessControl.authorizationCheck: #CHECK
+@Metadata.ignorePropagatedAnnotations: true
+@ObjectModel.usageType: {
+  serviceQuality: #X,
+  sizeCategory: #S,
+  dataClass: #MIXED
+}
+@Search.searchable: true
+define view entity ZCOS_OUTBOX_MONITOR_CDS
+  as select from zcos_outbox as _outbox
+  association [0..1] to t001 as _company on _outbox.bukrs = _company.bukrs
+  association [0..1] to ska1 as _trigger_gl on _outbox.trigger_gl = _trigger_gl.saknr
+  association [0..1] to zcos_audit as _audit on _outbox.guid = _audit.guid
+{
+  key _outbox.client,
+  key _outbox.guid,
+      _outbox.bukrs,
+      _outbox.gjahr,
+      _outbox.belnr_src,
+      _outbox.trigger_gl,
+      _outbox.product_code,
+      _outbox.total_charge,
+      _outbox.total_charge_currency,
+      _outbox.cos_amount,
+      _outbox.cos_amount_currency,
+      _outbox.created_at,
+      _outbox.processed_at,
+      _outbox.status,
+      _outbox.error_message,
+      
+      /* Associations */
+      _company,
+      _trigger_gl,
+      _audit
+}
