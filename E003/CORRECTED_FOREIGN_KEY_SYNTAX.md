@@ -38,11 +38,11 @@ foreign key [0..1,1..1] ska1_trigger
 
 #### **3. COS Mapping Reference (ZCOS_MAP)**
 ```abap
-foreign key [0..1,1..1] zcos_map
-  references zcos_map on zcos_outbox.bukrs = zcos_map.bukrs
-  and zcos_outbox.trigger_gl = zcos_map.trigger_gl
-  and zcos_outbox.product_code = zcos_map.product_code
-  and zcos_outbox.client = zcos_map.client;
+foreign key [0..1,1..1] zmap_cos_rules
+  references zmap_cos_rules on zcos_outbox.bukrs = zmap_cos_rules.bukrs
+  and zcos_outbox.trigger_gl = zmap_cos_rules.trigger_gl
+  and zcos_outbox.product_code = zmap_cos_rules.product_code
+  and zcos_outbox.client = zmap_cos_rules.client;
 ```
 
 ### **ZCOS_AUD Table**
@@ -81,32 +81,32 @@ foreign key [0..1,1..1] bkpf_cos
 #### **1. Company Code Reference (T001)**
 ```abap
 foreign key [0..1,1..1] t001
-  references t001 on zcos_map.bukrs = t001.bukrs
-  and zcos_map.client = t001.mandt;
+  references t001 on zmap_cos_rules.bukrs = t001.bukrs
+  and zmap_cos_rules.client = t001.mandt;
 ```
 
 #### **2. Trigger G/L Account Reference (SKA1)**
 ```abap
 foreign key [0..1,1..1] ska1_trigger
-  references ska1 on zcos_map.trigger_gl = ska1.saknr
-  and zcos_map.bukrs = ska1.bukrs
-  and zcos_map.client = ska1.mandt;
+  references ska1 on zmap_cos_rules.trigger_gl = ska1.saknr
+  and zmap_cos_rules.bukrs = ska1.bukrs
+  and zmap_cos_rules.client = ska1.mandt;
 ```
 
 #### **3. Sales G/L Account Reference (SKA1)**
 ```abap
 foreign key [0..1,1..1] ska1_sales
-  references ska1 on zcos_map.sales_gl = ska1.saknr
-  and zcos_map.bukrs = ska1.bukrs
-  and zcos_map.client = ska1.mandt;
+  references ska1 on zmap_cos_rules.sales_gl = ska1.saknr
+  and zmap_cos_rules.bukrs = ska1.bukrs
+  and zmap_cos_rules.client = ska1.mandt;
 ```
 
 #### **4. COS G/L Account Reference (SKA1)**
 ```abap
 foreign key [0..1,1..1] ska1_cos
-  references ska1 on zcos_map.cos_gl = ska1.saknr
-  and zcos_map.bukrs = ska1.bukrs
-  and zcos_map.client = ska1.mandt;
+  references ska1 on zmap_cos_rules.cos_gl = ska1.saknr
+  and zmap_cos_rules.bukrs = ska1.bukrs
+  and zmap_cos_rules.client = ska1.mandt;
 ```
 
 ## 📋 **Key Points About ABAP DDIC Foreign Keys**

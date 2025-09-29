@@ -86,7 +86,7 @@ SELECT SINGLE low FROM tvarvc WHERE name = 'ZCOS_E003_ACTIVE'.
 " Check tables exist
 SELECT COUNT(*) FROM zcos_outbox.
 SELECT COUNT(*) FROM zcos_audit.
-SELECT COUNT(*) FROM zcos_map.
+SELECT COUNT(*) FROM zmap_cos_rules.
 
 " Test function modules
 CALL FUNCTION 'ZCOS_IS_FEATURE_ACTIVE'

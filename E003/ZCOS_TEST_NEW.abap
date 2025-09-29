@@ -178,7 +178,7 @@ CLASS zcl_cos_test_runner IMPLEMENTATION.
 
   METHOD cleanup_all_test_data.
     " Clean up all test data
-    DELETE FROM zcos_map WHERE created_by = sy-uname OR product_code LIKE 'TEST%'.
+    DELETE FROM zmap_cos_rules WHERE created_by = sy-uname OR product_code LIKE 'TEST%'.
     DELETE FROM zcos_outbox WHERE created_at >= cl_abap_tstmp=>utc2tstmp( @cl_abap_tstmp=>create( date = @sy-datum time = '000000' ) ).
     DELETE FROM zcos_audit WHERE posted_by = sy-uname.
     DELETE FROM tvarvc WHERE name LIKE 'ZCOS_TEST_%'.
@@ -203,7 +203,7 @@ CLASS zcl_cos_test_runner IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD create_test_mapping_data.
-    DATA: ls_mapping TYPE zcos_map.
+    DATA: ls_mapping TYPE zmap_cos_rules.
 
     ls_mapping-client = sy-mandt.
     ls_mapping-bukrs = iv_bukrs.
@@ -218,7 +218,7 @@ CLASS zcl_cos_test_runner IMPLEMENTATION.
     ls_mapping-created_at = cl_abap_tstmp=>utc2tstmp( cl_abap_tstmp=>get_utc( ) ).
     ls_mapping-deleted = abap_false.
 
-    INSERT zcos_map FROM ls_mapping.
+    INSERT zmap_cos_rules FROM ls_mapping.
     COMMIT WORK.
   ENDMETHOD.
 

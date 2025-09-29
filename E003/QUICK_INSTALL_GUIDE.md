@@ -34,7 +34,7 @@ CALL FUNCTION 'ZCOS_SETUP_FEATURE_TOGGLE'
     iv_description  = 'COS Auto Posting Active'.
 
 " Create sample mapping
-INSERT zcos_map FROM VALUE #(
+INSERT zmap_cos_rules FROM VALUE #(
   client = sy-mandt
   bukrs = '1000'
   trigger_gl = '400000'
@@ -64,7 +64,7 @@ CALL FUNCTION 'ZCOS_IS_FEATURE_ACTIVE'
 " Verify tables exist
 SELECT COUNT(*) FROM zcos_outbox.
 SELECT COUNT(*) FROM zcos_audit.
-SELECT COUNT(*) FROM zcos_map.
+SELECT COUNT(*) FROM zmap_cos_rules.
 ```
 
 ## 📋 Installation Order
@@ -116,7 +116,7 @@ SELECT COUNT(*) FROM zcos_map.
 " Check all components
 SELECT COUNT(*) FROM zcos_outbox.
 SELECT COUNT(*) FROM zcos_audit.
-SELECT COUNT(*) FROM zcos_map.
+SELECT COUNT(*) FROM zmap_cos_rules.
 
 " Check classes exist
 SELECT SINGLE clsname FROM seoclass WHERE clsname = 'ZCL_COS_FEATURE_TOGGLE'.

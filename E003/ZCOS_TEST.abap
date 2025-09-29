@@ -46,7 +46,7 @@ START-OF-SELECTION.
 *& Form SETUP_TEST_DATA
 *&---------------------------------------------------------------------*
 FORM setup_test_data.
-  DATA: ls_mapping TYPE zcos_map.
+  DATA: ls_mapping TYPE zmap_cos_rules.
 
   " Create test mapping entries
   LOOP AT gt_test_data INTO gs_test_data.
@@ -63,7 +63,7 @@ FORM setup_test_data.
     ls_mapping-created_at = cl_abap_tstmp=>utc2tstmp( cl_abap_tstmp=>get_utc( ) ).
     ls_mapping-deleted = abap_false.
 
-    INSERT zcos_map FROM ls_mapping.
+    INSERT zmap_cos_rules FROM ls_mapping.
   ENDLOOP.
 
   COMMIT WORK.
@@ -164,7 +164,7 @@ ENDFORM.
 *&---------------------------------------------------------------------*
 FORM cleanup_test_data.
   " Clean up test data
-  DELETE FROM zcos_map WHERE created_by = sy-uname.
+  DELETE FROM zmap_cos_rules WHERE created_by = sy-uname.
   DELETE FROM zcos_outbox WHERE created_at >= cl_abap_tstmp=>utc2tstmp( cl_abap_tstmp=>create( date = sy-datum time = '000000' ) ).
   DELETE FROM zcos_audit WHERE posted_by = sy-uname.
 

@@ -30,14 +30,14 @@ foreign key [0..1,1..1] ska1_trigger
 
 #### **3. COS Mapping Reference (ZCOS_MAP)**
 ```abap
-foreign key [0..1,1..1] zcos_map
-  left join to zcos_map on zcos_outbox.bukrs = zcos_map.bukrs
-  and zcos_outbox.trigger_gl = zcos_map.trigger_gl
-  and zcos_outbox.product_code = zcos_map.product_code
-  and zcos_outbox.client = zcos_map.client
-  and zcos_outbox.created_at >= zcos_map.valid_from
-  and zcos_outbox.created_at <= zcos_map.valid_to
-  and zcos_map.deleted = @false;
+foreign key [0..1,1..1] zmap_cos_rules
+  left join to zmap_cos_rules on zcos_outbox.bukrs = zmap_cos_rules.bukrs
+  and zcos_outbox.trigger_gl = zmap_cos_rules.trigger_gl
+  and zcos_outbox.product_code = zmap_cos_rules.product_code
+  and zcos_outbox.client = zmap_cos_rules.client
+  and zcos_outbox.created_at >= zmap_cos_rules.valid_from
+  and zcos_outbox.created_at <= zmap_cos_rules.valid_to
+  and zmap_cos_rules.deleted = @false;
 ```
 - **Purpose**: Ensures valid COS mapping exists for the combination
 - **Cardinality**: 0..1 to 1..1 (optional to mandatory)
@@ -114,8 +114,8 @@ foreign key [0..1,1..1] bkpf_reversal
 #### **1. Company Code Reference (T001)**
 ```abap
 foreign key [0..1,1..1] t001
-  left join to t001 on zcos_map.bukrs = t001.bukrs
-  and zcos_map.client = t001.mandt;
+  left join to t001 on zmap_cos_rules.bukrs = t001.bukrs
+  and zmap_cos_rules.client = t001.mandt;
 ```
 - **Purpose**: Ensures company code exists and is valid
 - **Cardinality**: 0..1 to 1..1 (optional to mandatory)
@@ -123,9 +123,9 @@ foreign key [0..1,1..1] t001
 #### **2. Trigger G/L Account Reference (SKA1)**
 ```abap
 foreign key [0..1,1..1] ska1_trigger
-  left join to ska1 on zcos_map.trigger_gl = ska1.saknr
-  and zcos_map.bukrs = ska1.bukrs
-  and zcos_map.client = ska1.mandt;
+  left join to ska1 on zmap_cos_rules.trigger_gl = ska1.saknr
+  and zmap_cos_rules.bukrs = ska1.bukrs
+  and zmap_cos_rules.client = ska1.mandt;
 ```
 - **Purpose**: Ensures trigger G/L account exists and is valid
 - **Cardinality**: 0..1 to 1..1 (optional to mandatory)
@@ -133,9 +133,9 @@ foreign key [0..1,1..1] ska1_trigger
 #### **3. Sales G/L Account Reference (SKA1)**
 ```abap
 foreign key [0..1,1..1] ska1_sales
-  left join to ska1 on zcos_map.sales_gl = ska1.saknr
-  and zcos_map.bukrs = ska1.bukrs
-  and zcos_map.client = ska1.mandt;
+  left join to ska1 on zmap_cos_rules.sales_gl = ska1.saknr
+  and zmap_cos_rules.bukrs = ska1.bukrs
+  and zmap_cos_rules.client = ska1.mandt;
 ```
 - **Purpose**: Ensures sales G/L account exists and is valid
 - **Cardinality**: 0..1 to 1..1 (optional to mandatory)
@@ -143,9 +143,9 @@ foreign key [0..1,1..1] ska1_sales
 #### **4. COS G/L Account Reference (SKA1)**
 ```abap
 foreign key [0..1,1..1] ska1_cos
-  left join to ska1 on zcos_map.cos_gl = ska1.saknr
-  and zcos_map.bukrs = ska1.bukrs
-  and zcos_map.client = ska1.mandt;
+  left join to ska1 on zmap_cos_rules.cos_gl = ska1.saknr
+  and zmap_cos_rules.bukrs = ska1.bukrs
+  and zmap_cos_rules.client = ska1.mandt;
 ```
 - **Purpose**: Ensures COS G/L account exists and is valid
 - **Cardinality**: 0..1 to 1..1 (optional to mandatory)
@@ -153,7 +153,7 @@ foreign key [0..1,1..1] ska1_cos
 #### **5. Created By User Reference (USR21)**
 ```abap
 foreign key [0..1,1..1] usr21_created
-  left join to usr21 on zcos_map.created_by = usr21.bname;
+  left join to usr21 on zmap_cos_rules.created_by = usr21.bname;
 ```
 - **Purpose**: Ensures created by user exists in the system
 - **Cardinality**: 0..1 to 1..1 (optional to mandatory)
@@ -161,7 +161,7 @@ foreign key [0..1,1..1] usr21_created
 #### **6. Changed By User Reference (USR21)**
 ```abap
 foreign key [0..1,1..1] usr21_changed
-  left join to usr21 on zcos_map.changed_by = usr21.bname;
+  left join to usr21 on zmap_cos_rules.changed_by = usr21.bname;
 ```
 - **Purpose**: Ensures changed by user exists in the system
 - **Cardinality**: 0..1 to 1..1 (optional to mandatory)

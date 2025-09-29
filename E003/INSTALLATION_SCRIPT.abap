@@ -633,23 +633,28 @@ ENDFORM.
 *& Form CREATE_SAMPLE_MAPPING_DATA
 *&---------------------------------------------------------------------*
 FORM create_sample_mapping_data.
-  DATA: ls_mapping TYPE zcos_map.
+  DATA: ls_mapping TYPE zmap_cos_rules.
 
   " Create sample mapping entry
   ls_mapping-client = sy-mandt.
-  ls_mapping-bukrs = '1000'.
-  ls_mapping-trigger_gl = '400000'.
-  ls_mapping-product_code = 'SAMPLE'.
+  CALL FUNCTION 'GUID_CREATE'
+    IMPORTING
+      ev_guid_16 = ls_mapping-guid.
+  ls_mapping-source_gl = '400000'.
   ls_mapping-sales_gl = '500000'.
   ls_mapping-cos_gl = '600000'.
-  ls_mapping-margin_pct = '10.00'.
-  ls_mapping-valid_from = sy-datum.
-  ls_mapping-valid_to = '99991231'.
+  ls_mapping-netmargin_gl = '700000'.
+  ls_mapping-productcode = 'SAMPLE'.
+  ls_mapping-validfrom = sy-datum.
+  ls_mapping-validto = '99991231'.
+  ls_mapping-active = abap_true.
   ls_mapping-created_by = sy-uname.
-  ls_mapping-created_at = sy-datum.
+  ls_mapping-created_on = sy-datum.
+  ls_mapping-last_changed_by = sy-uname.
+  ls_mapping-last_changed_on = sy-datum.
 
   " Insert mapping data
-  INSERT zcos_map FROM ls_mapping.
+  INSERT zmap_cos_rules FROM ls_mapping.
   IF sy-subrc = 0.
     WRITE: / 'Sample mapping data created successfully ✓'.
   ELSE.

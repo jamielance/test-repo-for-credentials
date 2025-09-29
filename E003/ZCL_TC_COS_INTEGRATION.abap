@@ -196,14 +196,14 @@ CLASS zcl_tc_cos_integration IMPLEMENTATION.
   METHOD cleanup_test_data.
     " Clean up test data
     DELETE FROM zcos_outbox WHERE guid LIKE 'INTEGRATION%' OR guid LIKE 'TEST%'.
-    DELETE FROM zcos_map WHERE product_code LIKE 'INTEGRATION%' OR product_code LIKE 'TEST%'.
+    DELETE FROM zmap_cos_rules WHERE product_code LIKE 'INTEGRATION%' OR product_code LIKE 'TEST%'.
     DELETE FROM zcos_audit WHERE guid LIKE 'INTEGRATION%' OR guid LIKE 'TEST%'.
     DELETE FROM tvarvc WHERE name LIKE 'ZCOS_TEST_%'.
     COMMIT WORK.
   ENDMETHOD.
 
   METHOD create_test_mapping_data.
-    DATA: ls_mapping TYPE zcos_map.
+    DATA: ls_mapping TYPE zmap_cos_rules.
 
     " Create test mapping entry
     ls_mapping-client = sy-mandt.
@@ -219,7 +219,7 @@ CLASS zcl_tc_cos_integration IMPLEMENTATION.
     ls_mapping-created_at = cl_abap_tstmp=>utc2tstmp( cl_abap_tstmp=>get_utc( ) ).
     ls_mapping-deleted = abap_false.
 
-    INSERT zcos_map FROM ls_mapping.
+    INSERT zmap_cos_rules FROM ls_mapping.
     COMMIT WORK.
   ENDMETHOD.
 

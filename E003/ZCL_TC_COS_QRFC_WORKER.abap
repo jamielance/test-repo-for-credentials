@@ -337,7 +337,7 @@ CLASS zcl_tc_cos_qrfc_worker IMPLEMENTATION.
   METHOD cleanup_test_data.
     " Clean up test data
     DELETE FROM zcos_outbox WHERE guid LIKE '1234567890123456'.
-    DELETE FROM zcos_map WHERE product_code = 'TEST001'.
+    DELETE FROM zmap_cos_rules WHERE product_code = 'TEST001'.
     DELETE FROM zcos_audit WHERE guid LIKE '1234567890123456'.
     COMMIT WORK.
   ENDMETHOD.
@@ -361,7 +361,7 @@ CLASS zcl_tc_cos_qrfc_worker IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD create_test_mapping_entry.
-    DATA: ls_mapping TYPE zcos_map.
+    DATA: ls_mapping TYPE zmap_cos_rules.
 
     ls_mapping-client = sy-mandt.
     ls_mapping-bukrs = iv_bukrs.
@@ -376,7 +376,7 @@ CLASS zcl_tc_cos_qrfc_worker IMPLEMENTATION.
     ls_mapping-created_at = cl_abap_tstmp=>utc2tstmp( cl_abap_tstmp=>get_utc( ) ).
     ls_mapping-deleted = abap_false.
 
-    INSERT zcos_map FROM ls_mapping.
+    INSERT zmap_cos_rules FROM ls_mapping.
     COMMIT WORK.
   ENDMETHOD.
 

@@ -12,24 +12,30 @@ CLASS zcl_cos_document_processor DEFINITION
     "! <p>Contains the mapping configuration for COS processing including
     "! G/L accounts, product codes, and margin percentages.</p>
     TYPES: BEGIN OF ty_cos_mapping,
-             "! <p class="shorttext synchronized">Company code</p>
-             "! <p>Company code for the mapping</p>
-             bukrs        TYPE bukrs,
-             "! <p class="shorttext synchronized">Trigger G/L account</p>
+             "! <p class="shorttext synchronized">Source G/L account</p>
              "! <p>G/L account that triggers COS processing</p>
-             trigger_gl   TYPE saknr,
-             "! <p class="shorttext synchronized">Product code</p>
-             "! <p>Product code for the mapping</p>
-             product_code TYPE char20,
+             source_gl    TYPE hkont,
              "! <p class="shorttext synchronized">Sales G/L account</p>
              "! <p>G/L account for sales revenue</p>
-             sales_gl     TYPE saknr,
+             sales_gl     TYPE hkont,
              "! <p class="shorttext synchronized">COS G/L account</p>
              "! <p>G/L account for cost of sales</p>
-             cos_gl       TYPE saknr,
-             "! <p class="shorttext synchronized">Margin percentage</p>
-             "! <p>Margin percentage for COS calculation</p>
-             margin_pct   TYPE dec5_2,
+             cos_gl       TYPE hkont,
+             "! <p class="shorttext synchronized">Net margin G/L account</p>
+             "! <p>G/L account for net margin</p>
+             netmargin_gl TYPE hkont,
+             "! <p class="shorttext synchronized">Product code</p>
+             "! <p>Product code for the mapping</p>
+             productcode  TYPE matnr,
+             "! <p class="shorttext synchronized">Valid from</p>
+             "! <p>Valid from date</p>
+             validfrom    TYPE datuv,
+             "! <p class="shorttext synchronized">Valid to</p>
+             "! <p>Valid to date</p>
+             validto      TYPE datbi,
+             "! <p class="shorttext synchronized">Active</p>
+             "! <p>Active status</p>
+             active       TYPE activ,
            END OF ty_cos_mapping.
 
     "! <p class="shorttext synchronized">Processing result structure</p>
@@ -139,15 +145,13 @@ CLASS zcl_cos_document_processor DEFINITION
       "! <p class="shorttext synchronized">Get COS mapping configuration</p>
       "! <p>Retrieves the COS mapping configuration for the specified
       "! company code, trigger G/L account, and product code.</p>
-      "! @parameter iv_bukrs | <p class="shorttext synchronized">Company code</p>
-      "! @parameter iv_trigger_gl | <p class="shorttext synchronized">Trigger G/L account</p>
+      "! @parameter iv_trigger_gl | <p class="shorttext synchronized">Source G/L account</p>
       "! @parameter iv_product_code | <p class="shorttext synchronized">Product code</p>
       "! @parameter rs_mapping | <p class="shorttext synchronized">COS mapping configuration</p>
       get_cos_mapping
         IMPORTING
-          iv_bukrs        TYPE bukrs
-          iv_trigger_gl   TYPE saknr
-          iv_product_code TYPE char20
+          iv_trigger_gl   TYPE hkont
+          iv_product_code TYPE matnr
         RETURNING
           VALUE(rs_mapping) TYPE ty_cos_mapping,
 
@@ -262,7 +266,6 @@ CLASS zcl_cos_document_processor IMPLEMENTATION.
 
     " Get COS mapping
     ls_mapping = get_cos_mapping(
-      iv_bukrs = iv_document-header-bukrs
       iv_trigger_gl = lv_trigger_gl
       iv_product_code = lv_product_code
     ).
@@ -338,13 +341,13 @@ CLASS zcl_cos_document_processor IMPLEMENTATION.
     LOOP AT it_accit INTO DATA(ls_accit).
       IF ls_accit-hkont IS NOT INITIAL.
         " Check if this is a trigger G/L
-        " Note: ZCOS_MAP is custom table, no standard VDM view available
-        SELECT SINGLE trigger_gl FROM zcos_map
+        " Note: ZMAP_COS_RULES is custom table, no standard VDM view available
+        SELECT SINGLE source_gl FROM zmap_cos_rules
           INTO @rv_trigger_gl
-          WHERE trigger_gl = @ls_accit-hkont
-            AND valid_from <= @sy-datum
-            AND valid_to >= @sy-datum
-            AND deleted = @abap_false.
+          WHERE source_gl = @ls_accit-hkont
+            AND validfrom <= @sy-datum
+            AND validto >= @sy-datum
+            AND active = @abap_true.
         
         IF sy-subrc = 0.
           EXIT.
@@ -366,15 +369,14 @@ CLASS zcl_cos_document_processor IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_cos_mapping.
-    SELECT SINGLE bukrs, trigger_gl, product_code, sales_gl, cos_gl, margin_pct
-      FROM zcos_map
+    SELECT SINGLE source_gl, sales_gl, cos_gl, netmargin_gl, productcode, validfrom, validto, active
+      FROM zmap_cos_rules
       INTO CORRESPONDING FIELDS OF @rs_mapping
-      WHERE bukrs = @iv_bukrs
-        AND trigger_gl = @iv_trigger_gl
-        AND product_code = @iv_product_code
-        AND valid_from <= @sy-datum
-        AND valid_to >= @sy-datum
-        AND deleted = @abap_false.
+      WHERE source_gl = @iv_trigger_gl
+        AND productcode = @iv_product_code
+        AND validfrom <= @sy-datum
+        AND validto >= @sy-datum
+        AND active = @abap_true.
   ENDMETHOD.
 
   METHOD create_outbox_entry.

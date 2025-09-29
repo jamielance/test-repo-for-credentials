@@ -34,8 +34,8 @@ validation validateForeignKeys on save { field bukrs, trigger_gl, sales_gl, cos_
 // DDIC Foreign Key (Data Integrity)
 bukrs : bukrs not null
   foreign key [0..1,1..1] t001
-    references t001 on zcos_map.bukrs = t001.bukrs
-    and zcos_map.client = t001.mandt;
+    references t001 on zmap_cos_rules.bukrs = t001.bukrs
+    and zmap_cos_rules.client = t001.mandt;
 
 // RAP Validation (Business Logic)
 METHOD validateCompanyCode.
