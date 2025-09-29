@@ -8,40 +8,40 @@
 @AbapCatalog.dataMaintenance : #RESTRICTED
 define table zcos_aud {
   key client            : mandt not null;
-  key guid              : sysuuid_x16 not null
-    foreign key [0..1,1..1] zcos_outbox
-      references zcos_outbox on zcos_aud.guid = zcos_outbox.guid
-      and zcos_aud.client = zcos_outbox.client;
-  bukrs                 : bukrs not null
-    foreign key [0..1,1..1] t001
-      references t001 on zcos_aud.bukrs = t001.bukrs
-      and zcos_aud.client = t001.mandt;
-  belnr_cos             : belnr_d not null
-    foreign key [0..1,1..1] bkpf_cos
-      references bkpf on zcos_aud.belnr_cos = bkpf.belnr
-      and zcos_aud.gjahr = bkpf.gjahr
-      and zcos_aud.bukrs = bkpf.bukrs
-      and zcos_aud.client = bkpf.mandt;
+          key guid              : sysuuid_x16 not null
+            with foreign key zcos_outbox
+              where client = zcos_aud.client
+                and guid = zcos_aud.guid;
+          bukrs                 : bukrs not null
+            with foreign key t001
+              where mandt = zcos_aud.client
+                and bukrs = zcos_aud.bukrs;
+          belnr_cos             : belnr_d not null
+            with foreign key bkpf
+              where mandt = zcos_aud.client
+                and bukrs = zcos_aud.bukrs
+                and gjahr = zcos_aud.gjahr
+                and belnr = zcos_aud.belnr_cos;
   gjahr                 : gjahr not null;
-  belnr_src             : belnr_d not null
-    foreign key [0..1,1..1] bkpf_src
-      references bkpf on zcos_aud.belnr_src = bkpf.belnr
-      and zcos_aud.gjahr = bkpf.gjahr
-      and zcos_aud.bukrs = bkpf.bukrs
-      and zcos_aud.client = bkpf.mandt;
+          belnr_src             : belnr_d not null
+            with foreign key bkpf
+              where mandt = zcos_aud.client
+                and bukrs = zcos_aud.bukrs
+                and gjahr = zcos_aud.gjahr
+                and belnr = zcos_aud.belnr_src;
   posted_at             : timestampl;
-  posted_by             : syuname
-    foreign key [0..1,1..1] usr21
-      references usr21 on zcos_aud.posted_by = usr21.bname;
+          posted_by             : syuname
+            with foreign key usr21
+              where bname = zcos_aud.posted_by;
   @Semantics.amount.currencyCode : 't001.waers'
   cos_amount            : dmbtr;
   cos_amount_currency   : waers not null;
   status                : char1;
-  reversal_doc          : belnr_d
-    foreign key [0..1,1..1] bkpf_reversal
-      references bkpf on zcos_aud.reversal_doc = bkpf.belnr
-      and zcos_aud.reversal_gjahr = bkpf.gjahr
-      and zcos_aud.bukrs = bkpf.bukrs
-      and zcos_aud.client = bkpf.mandt;
+          reversal_doc          : belnr_d
+            with foreign key bkpf
+              where mandt = zcos_aud.client
+                and bukrs = zcos_aud.bukrs
+                and gjahr = zcos_aud.reversal_gjahr
+                and belnr = zcos_aud.reversal_doc;
   reversal_gjahr        : gjahr;
 }

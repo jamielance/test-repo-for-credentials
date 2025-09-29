@@ -8,36 +8,33 @@
 @AbapCatalog.dataMaintenance : #RESTRICTED
 define table zcos_map {
   key client            : mandt not null;
-  key bukrs             : bukrs not null
-    foreign key [0..1,1..1] t001
-      references t001 on zcos_map.bukrs = t001.bukrs
-      and zcos_map.client = t001.mandt;
-  key trigger_gl        : saknr not null
-    foreign key [0..1,1..1] ska1_trigger
-      references ska1 on zcos_map.trigger_gl = ska1.saknr
-      and zcos_map.bukrs = ska1.bukrs
-      and zcos_map.client = ska1.mandt;
+          key bukrs             : bukrs not null
+            with foreign key t001
+              where mandt = zcos_map.client
+                and bukrs = zcos_map.bukrs;
+          key trigger_gl        : saknr not null
+            with foreign key ska1
+              where mandt = zcos_map.client
+                and saknr = zcos_map.trigger_gl;
   key product_code      : char20 not null;
   key valid_from        : dats not null;
   key valid_to          : dats not null;
-  sales_gl              : saknr not null
-    foreign key [0..1,1..1] ska1_sales
-      references ska1 on zcos_map.sales_gl = ska1.saknr
-      and zcos_map.bukrs = ska1.bukrs
-      and zcos_map.client = ska1.mandt;
-  cos_gl                : saknr not null
-    foreign key [0..1,1..1] ska1_cos
-      references ska1 on zcos_map.cos_gl = ska1.saknr
-      and zcos_map.bukrs = ska1.bukrs
-      and zcos_map.client = ska1.mandt;
+          sales_gl              : saknr not null
+            with foreign key ska1
+              where mandt = zcos_map.client
+                and saknr = zcos_map.sales_gl;
+          cos_gl                : saknr not null
+            with foreign key ska1
+              where mandt = zcos_map.client
+                and saknr = zcos_map.cos_gl;
   margin_pct            : dec5_2;
-  created_by            : syuname
-    foreign key [0..1,1..1] usr21_created
-      references usr21 on zcos_map.created_by = usr21.bname;
+          created_by            : syuname
+            with foreign key usr21
+              where bname = zcos_map.created_by;
   created_at            : timestampl;
-  changed_by            : syuname
-    foreign key [0..1,1..1] usr21_changed
-      references usr21 on zcos_map.changed_by = usr21.bname;
+          changed_by            : syuname
+            with foreign key usr21
+              where bname = zcos_map.changed_by;
   changed_at            : timestampl;
   deleted               : abap_bool;
 }
