@@ -8,24 +8,51 @@ CLASS zcl_cos_logger DEFINITION
   CREATE PUBLIC.
 
   PUBLIC SECTION.
+    "! <p class="shorttext synchronized">Logger interface</p>
+    "! <p>Implements the ZIF_COS_LOGGER interface for standardized logging</p>
     INTERFACES zif_cos_logger.
 
+    "! <p class="shorttext synchronized">Constructor</p>
+    "! <p>Creates a new logger instance with specified object and subobject.
+    "! Initializes the Business Application Log (BAL) for COS processing.</p>
+    "! @parameter iv_object | <p class="shorttext synchronized">Log object (default: ZCOS)</p>
+    "! @parameter iv_subobject | <p class="shorttext synchronized">Log subobject (default: QRFC)</p>
     METHODS:
       constructor
         IMPORTING
           iv_object    TYPE balobj_d DEFAULT 'ZCOS'
           iv_subobject TYPE balsubobj DEFAULT 'QRFC',
 
+      "! <p class="shorttext synchronized">Get log handle</p>
+      "! <p>Returns the current log handle for external log operations
+      "! and log management.</p>
+      "! @parameter rv_handle | <p class="shorttext synchronized">BAL log handle</p>
       get_log_handle
         RETURNING
           VALUE(rv_handle) TYPE balloghndl.
 
   PRIVATE SECTION.
+    "! <p class="shorttext synchronized">Log handle</p>
+    "! <p>BAL log handle for the current logging session</p>
     DATA:
       mv_log_handle TYPE balloghndl,
+      "! <p class="shorttext synchronized">Log object</p>
+      "! <p>BAL log object identifier</p>
       mv_object     TYPE balobj_d,
+      "! <p class="shorttext synchronized">Log subobject</p>
+      "! <p>BAL log subobject identifier</p>
       mv_subobject  TYPE balsubobj.
 
+    "! <p class="shorttext synchronized">Add log message</p>
+    "! <p>Adds a message to the current log with specified severity and parameters.
+    "! This is the core logging method used by all interface methods.</p>
+    "! @parameter iv_severity | <p class="shorttext synchronized">Message severity (I/W/E/S)</p>
+    "! @parameter iv_message_id | <p class="shorttext synchronized">Message class ID</p>
+    "! @parameter iv_message_no | <p class="shorttext synchronized">Message number</p>
+    "! @parameter iv_message_v1 | <p class="shorttext synchronized">Message variable 1 (optional)</p>
+    "! @parameter iv_message_v2 | <p class="shorttext synchronized">Message variable 2 (optional)</p>
+    "! @parameter iv_message_v3 | <p class="shorttext synchronized">Message variable 3 (optional)</p>
+    "! @parameter iv_message_v4 | <p class="shorttext synchronized">Message variable 4 (optional)</p>
     METHODS:
       add_log_message
         IMPORTING

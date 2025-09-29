@@ -104,10 +104,17 @@ ENDFUNCTION.
 
 *&---------------------------------------------------------------------*
 *& Class: ZCL_COS_FEATURE_TOGGLE
-*& Description: Feature toggle management class
+*& Description: Feature toggle management class for COS Auto Posting solution
 *&---------------------------------------------------------------------*
 CLASS zcl_cos_feature_toggle DEFINITION.
   PUBLIC SECTION.
+    "! <p class="shorttext synchronized">Setup or update a feature toggle</p>
+    "! <p>Creates a new feature toggle entry in TVARVC table or updates an existing one.
+    "! This method is used to enable/disable features in the COS Auto Posting solution.</p>
+    "! @parameter iv_feature_name | <p class="shorttext synchronized">Feature name identifier</p>
+    "! @parameter iv_is_active | <p class="shorttext synchronized">Whether the feature is active</p>
+    "! @parameter iv_description | <p class="shorttext synchronized">Description of the feature</p>
+    "! @parameter rv_success | <p class="shorttext synchronized">True if setup was successful</p>
     METHODS:
       setup_feature
         IMPORTING
@@ -117,12 +124,22 @@ CLASS zcl_cos_feature_toggle DEFINITION.
         RETURNING
           VALUE(rv_success) TYPE abap_bool,
       
+      "! <p class="shorttext synchronized">Deactivate a feature toggle</p>
+      "! <p>Sets the feature toggle to inactive status in the TVARVC table.
+      "! This effectively disables the feature without removing the configuration.</p>
+      "! @parameter iv_feature_name | <p class="shorttext synchronized">Feature name identifier</p>
+      "! @parameter rv_success | <p class="shorttext synchronized">True if deactivation was successful</p>
       deactivate_feature
         IMPORTING
           iv_feature_name TYPE string
         RETURNING
           VALUE(rv_success) TYPE abap_bool,
       
+      "! <p class="shorttext synchronized">Check if a feature is active</p>
+      "! <p>Reads the current status of a feature toggle from the TVARVC table.
+      "! Returns true if the feature is currently active, false otherwise.</p>
+      "! @parameter iv_feature_name | <p class="shorttext synchronized">Feature name identifier</p>
+      "! @parameter rv_is_active | <p class="shorttext synchronized">True if feature is active</p>
       is_feature_active
         IMPORTING
           iv_feature_name TYPE string
@@ -130,6 +147,11 @@ CLASS zcl_cos_feature_toggle DEFINITION.
           VALUE(rv_is_active) TYPE abap_bool.
 
   PRIVATE SECTION.
+    "! <p class="shorttext synchronized">Validate feature name input</p>
+    "! <p>Validates that the feature name is not empty and follows naming conventions.
+    "! Used internally to ensure data quality before database operations.</p>
+    "! @parameter iv_feature_name | <p class="shorttext synchronized">Feature name to validate</p>
+    "! @parameter rv_valid | <p class="shorttext synchronized">True if feature name is valid</p>
     METHODS:
       validate_feature_name
         IMPORTING
@@ -137,6 +159,13 @@ CLASS zcl_cos_feature_toggle DEFINITION.
         RETURNING
           VALUE(rv_valid) TYPE abap_bool,
       
+      "! <p class="shorttext synchronized">Create new TVARVC entry</p>
+      "! <p>Creates a new feature toggle entry in the TVARVC table.
+      "! This method handles the database insert operation for new features.</p>
+      "! @parameter iv_feature_name | <p class="shorttext synchronized">Feature name identifier</p>
+      "! @parameter iv_is_active | <p class="shorttext synchronized">Initial active status</p>
+      "! @parameter iv_description | <p class="shorttext synchronized">Feature description</p>
+      "! @parameter rv_success | <p class="shorttext synchronized">True if creation was successful</p>
       create_tvarvc_entry
         IMPORTING
           iv_feature_name TYPE string
@@ -145,6 +174,12 @@ CLASS zcl_cos_feature_toggle DEFINITION.
         RETURNING
           VALUE(rv_success) TYPE abap_bool,
       
+      "! <p class="shorttext synchronized">Update existing TVARVC entry</p>
+      "! <p>Updates an existing feature toggle entry in the TVARVC table.
+      "! This method handles the database update operation for existing features.</p>
+      "! @parameter iv_feature_name | <p class="shorttext synchronized">Feature name identifier</p>
+      "! @parameter iv_is_active | <p class="shorttext synchronized">New active status</p>
+      "! @parameter rv_success | <p class="shorttext synchronized">True if update was successful</p>
       update_tvarvc_entry
         IMPORTING
           iv_feature_name TYPE string
@@ -152,14 +187,23 @@ CLASS zcl_cos_feature_toggle DEFINITION.
         RETURNING
           VALUE(rv_success) TYPE abap_bool,
       
+      "! <p class="shorttext synchronized">Read TVARVC entry</p>
+      "! <p>Reads a feature toggle entry from the TVARVC table.
+      "! This method retrieves the complete TVARVC record for a given feature name.</p>
+      "! @parameter iv_feature_name | <p class="shorttext synchronized">Feature name identifier</p>
+      "! @parameter rs_tvarvc | <p class="shorttext synchronized">TVARVC record data</p>
       read_tvarvc_entry
         IMPORTING
           iv_feature_name TYPE string
         RETURNING
           VALUE(rs_tvarvc) TYPE tvarvc.
 
+    "! <p class="shorttext synchronized">Feature toggle type constant</p>
+    "! <p>Defines the TVARVC type for feature toggles (Parameter type)</p>
     CONSTANTS:
       gc_feature_type TYPE tvarvc-type VALUE 'P',
+      "! <p class="shorttext synchronized">Feature toggle number constant</p>
+      "! <p>Defines the TVARVC number for feature toggles (default numbering)</p>
       gc_feature_numb TYPE tvarvc-numb VALUE '000000'.
 
 ENDCLASS.

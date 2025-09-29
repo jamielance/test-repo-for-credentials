@@ -8,26 +8,60 @@ CLASS zcl_cos_document_processor DEFINITION
   CREATE PUBLIC.
 
   PUBLIC SECTION.
+    "! <p class="shorttext synchronized">COS mapping structure</p>
+    "! <p>Contains the mapping configuration for COS processing including
+    "! G/L accounts, product codes, and margin percentages.</p>
     TYPES: BEGIN OF ty_cos_mapping,
+             "! <p class="shorttext synchronized">Company code</p>
+             "! <p>Company code for the mapping</p>
              bukrs        TYPE bukrs,
+             "! <p class="shorttext synchronized">Trigger G/L account</p>
+             "! <p>G/L account that triggers COS processing</p>
              trigger_gl   TYPE saknr,
+             "! <p class="shorttext synchronized">Product code</p>
+             "! <p>Product code for the mapping</p>
              product_code TYPE char20,
+             "! <p class="shorttext synchronized">Sales G/L account</p>
+             "! <p>G/L account for sales revenue</p>
              sales_gl     TYPE saknr,
+             "! <p class="shorttext synchronized">COS G/L account</p>
+             "! <p>G/L account for cost of sales</p>
              cos_gl       TYPE saknr,
+             "! <p class="shorttext synchronized">Margin percentage</p>
+             "! <p>Margin percentage for COS calculation</p>
              margin_pct   TYPE dec5_2,
            END OF ty_cos_mapping.
 
+    "! <p class="shorttext synchronized">Processing result structure</p>
+    "! <p>Contains the result of document processing operations including
+    "! success status, generated GUID, and error details.</p>
     TYPES: BEGIN OF ty_processing_result,
+             "! <p class="shorttext synchronized">Processing success flag</p>
+             "! <p>True if processing completed successfully</p>
              success       TYPE abap_bool,
+             "! <p class="shorttext synchronized">Generated GUID</p>
+             "! <p>GUID of the created outbox entry</p>
              guid          TYPE sysuuid_x16,
+             "! <p class="shorttext synchronized">Error message</p>
+             "! <p>Error message if processing failed</p>
              error_message TYPE string,
            END OF ty_processing_result.
 
+    "! <p class="shorttext synchronized">Constructor</p>
+    "! <p>Creates a new instance of the document processor with optional dependencies.
+    "! Uses dependency injection for logger and validator for better testability.</p>
+    "! @parameter io_logger | <p class="shorttext synchronized">Logger instance (optional)</p>
     METHODS:
       constructor
         IMPORTING
           io_logger TYPE REF TO zif_cos_logger OPTIONAL,
 
+      "! <p class="shorttext synchronized">Process document</p>
+    "! <p>Main processing method that handles a single ACDOCA document.
+    "! Performs feature checks, validation, mapping lookup, and outbox creation.
+    "! This is the core method called by the BAdI implementation.</p>
+    "! @parameter iv_document | <p class="shorttext synchronized">ACDOCA document to process</p>
+    "! @parameter rv_result | <p class="shorttext synchronized">Processing result with GUID</p>
       process_document
         IMPORTING
           iv_document TYPE acdoca
@@ -35,15 +69,30 @@ CLASS zcl_cos_document_processor DEFINITION
           VALUE(rv_result) TYPE ty_processing_result.
 
   PRIVATE SECTION.
+    "! <p class="shorttext synchronized">Logger instance</p>
+    "! <p>Dependency injected logger for application logging</p>
     DATA:
       mo_logger     TYPE REF TO zif_cos_logger,
+      "! <p class="shorttext synchronized">Validator instance</p>
+      "! <p>Dependency injected validator for business rule validation</p>
       mo_validator  TYPE REF TO zif_cos_validator.
 
+    "! <p class="shorttext synchronized">Check if feature is active</p>
+    "! <p>Checks if the COS Auto Posting feature is currently active
+    "! by querying the feature toggle configuration.</p>
+    "! @parameter rv_active | <p class="shorttext synchronized">True if feature is active</p>
     METHODS:
       check_feature_active
         RETURNING
           VALUE(rv_active) TYPE abap_bool,
 
+      "! <p class="shorttext synchronized">Check E008 validation</p>
+      "! <p>Validates that the document passes E008 business rules.
+      "! This includes checking document status, posting period, and other validations.</p>
+      "! @parameter iv_bukrs | <p class="shorttext synchronized">Company code</p>
+      "! @parameter iv_gjahr | <p class="shorttext synchronized">Fiscal year</p>
+      "! @parameter iv_belnr | <p class="shorttext synchronized">Document number</p>
+      "! @parameter rv_passed | <p class="shorttext synchronized">True if validation passed</p>
       check_e008_validation
         IMPORTING
           iv_bukrs TYPE bukrs
@@ -52,18 +101,34 @@ CLASS zcl_cos_document_processor DEFINITION
         RETURNING
           VALUE(rv_passed) TYPE abap_bool,
 
+      "! <p class="shorttext synchronized">Find trigger G/L account</p>
+      "! <p>Identifies the trigger G/L account from the ACDOCA entries
+      "! that should initiate COS processing based on business rules.</p>
+      "! @parameter it_accit | <p class="shorttext synchronized">ACDOCA entries to analyze</p>
+      "! @parameter rv_trigger_gl | <p class="shorttext synchronized">Trigger G/L account found</p>
       find_trigger_gl
         IMPORTING
           it_accit TYPE acdoca_t
         RETURNING
           VALUE(rv_trigger_gl) TYPE saknr,
 
+      "! <p class="shorttext synchronized">Extract product code</p>
+      "! <p>Extracts the product code from the ACDOCA entry
+      "! for mapping lookup and COS calculation.</p>
+      "! @parameter is_accit | <p class="shorttext synchronized">ACDOCA entry to extract from</p>
+      "! @parameter rv_product_code | <p class="shorttext synchronized">Extracted product code</p>
       extract_product_code
         IMPORTING
           is_accit TYPE acdoca
         RETURNING
           VALUE(rv_product_code) TYPE char20,
 
+      "! <p class="shorttext synchronized">Calculate total charge</p>
+      "! <p>Calculates the total charge amount from ACDOCA entries
+      "! for the specified trigger G/L account.</p>
+      "! @parameter it_accit | <p class="shorttext synchronized">ACDOCA entries to sum</p>
+      "! @parameter iv_trigger_gl | <p class="shorttext synchronized">Trigger G/L account</p>
+      "! @parameter rv_total_charge | <p class="shorttext synchronized">Total charge amount</p>
       calculate_total_charge
         IMPORTING
           it_accit TYPE acdoca_t
@@ -71,6 +136,13 @@ CLASS zcl_cos_document_processor DEFINITION
         RETURNING
           VALUE(rv_total_charge) TYPE dmbtr,
 
+      "! <p class="shorttext synchronized">Get COS mapping configuration</p>
+      "! <p>Retrieves the COS mapping configuration for the specified
+      "! company code, trigger G/L account, and product code.</p>
+      "! @parameter iv_bukrs | <p class="shorttext synchronized">Company code</p>
+      "! @parameter iv_trigger_gl | <p class="shorttext synchronized">Trigger G/L account</p>
+      "! @parameter iv_product_code | <p class="shorttext synchronized">Product code</p>
+      "! @parameter rs_mapping | <p class="shorttext synchronized">COS mapping configuration</p>
       get_cos_mapping
         IMPORTING
           iv_bukrs        TYPE bukrs
@@ -79,6 +151,16 @@ CLASS zcl_cos_document_processor DEFINITION
         RETURNING
           VALUE(rs_mapping) TYPE ty_cos_mapping,
 
+      "! <p class="shorttext synchronized">Create outbox entry</p>
+      "! <p>Creates a new outbox entry in the ZCOS_OUTBOX table
+      "! with all required data for qRFC processing.</p>
+      "! @parameter iv_bukrs | <p class="shorttext synchronized">Company code</p>
+      "! @parameter iv_gjahr | <p class="shorttext synchronized">Fiscal year</p>
+      "! @parameter iv_belnr | <p class="shorttext synchronized">Source document number</p>
+      "! @parameter iv_trigger_gl | <p class="shorttext synchronized">Trigger G/L account</p>
+      "! @parameter iv_product_code | <p class="shorttext synchronized">Product code</p>
+      "! @parameter iv_total_charge | <p class="shorttext synchronized">Total charge amount</p>
+      "! @parameter rv_guid | <p class="shorttext synchronized">Generated GUID for outbox entry</p>
       create_outbox_entry
         IMPORTING
           iv_bukrs        TYPE bukrs
@@ -90,6 +172,13 @@ CLASS zcl_cos_document_processor DEFINITION
         RETURNING
           VALUE(rv_guid) TYPE sysuuid_x16,
 
+      "! <p class="shorttext synchronized">Enqueue qRFC unit</p>
+      "! <p>Enqueues a qRFC unit for asynchronous processing
+      "! of the created outbox entry.</p>
+      "! @parameter iv_guid | <p class="shorttext synchronized">Outbox entry GUID</p>
+      "! @parameter iv_bukrs | <p class="shorttext synchronized">Company code</p>
+      "! @parameter iv_gjahr | <p class="shorttext synchronized">Fiscal year</p>
+      "! @parameter iv_belnr | <p class="shorttext synchronized">Source document number</p>
       enqueue_qrfc_unit
         IMPORTING
           iv_guid  TYPE sysuuid_x16

@@ -8,36 +8,95 @@ CLASS zcl_cos_monitor DEFINITION
   CREATE PUBLIC.
 
   PUBLIC SECTION.
+    "! <p class="shorttext synchronized">Monitor data structure</p>
+    "! <p>Contains detailed monitoring information for COS processing
+    "! including document data, amounts, status, and error information.</p>
     TYPES: BEGIN OF ty_monitor_data,
+             "! <p class="shorttext synchronized">GUID</p>
+             "! <p>Unique identifier for the outbox entry</p>
              guid              TYPE sysuuid_x16,
+             "! <p class="shorttext synchronized">Company code</p>
+             "! <p>Company code for the processing</p>
              bukrs             TYPE bukrs,
+             "! <p class="shorttext synchronized">Source document number</p>
+             "! <p>Original document number that triggered COS</p>
              belnr_src         TYPE belnr_d,
+             "! <p class="shorttext synchronized">Fiscal year</p>
+             "! <p>Fiscal year of the processing</p>
              gjahr             TYPE gjahr,
+             "! <p class="shorttext synchronized">COS document number</p>
+             "! <p>Generated COS document number</p>
              belnr_cos         TYPE belnr_d,
+             "! <p class="shorttext synchronized">COS amount</p>
+             "! <p>Amount posted for COS</p>
              cos_amount        TYPE dmbtr,
+             "! <p class="shorttext synchronized">COS amount currency</p>
+             "! <p>Currency of the COS amount</p>
              cos_amount_currency TYPE waers,
+             "! <p class="shorttext synchronized">Processing status</p>
+             "! <p>Current status of the processing (P/E/S/C)</p>
              status            TYPE char1,
+             "! <p class="shorttext synchronized">Posted timestamp</p>
+             "! <p>When the processing was completed</p>
              posted_at         TYPE timestampl,
+             "! <p class="shorttext synchronized">Posted by user</p>
+             "! <p>User who completed the processing</p>
              posted_by         TYPE syuname,
+             "! <p class="shorttext synchronized">Error message</p>
+             "! <p>Error message if processing failed</p>
              error_message     TYPE char255,
+             "! <p class="shorttext synchronized">Reversal document</p>
+             "! <p>Document number if reversed</p>
              reversal_doc      TYPE belnr_d,
+             "! <p class="shorttext synchronized">Reversal year</p>
+             "! <p>Fiscal year of reversal</p>
              reversal_gjahr    TYPE gjahr,
            END OF ty_monitor_data.
 
+    "! <p class="shorttext synchronized">Monitor summary structure</p>
+    "! <p>Contains aggregated statistics for COS processing
+    "! including counts, totals, and status breakdown.</p>
     TYPES: BEGIN OF ty_monitor_summary,
+             "! <p class="shorttext synchronized">Total records</p>
+             "! <p>Total number of records processed</p>
              total_records    TYPE i,
+             "! <p class="shorttext synchronized">Total amount</p>
+             "! <p>Total COS amount processed</p>
              total_amount     TYPE dmbtr,
+             "! <p class="shorttext synchronized">Pending count</p>
+             "! <p>Number of pending records</p>
              pending_count    TYPE i,
+             "! <p class="shorttext synchronized">Error count</p>
+             "! <p>Number of error records</p>
              error_count      TYPE i,
+             "! <p class="shorttext synchronized">Complete count</p>
+             "! <p>Number of completed records</p>
              complete_count   TYPE i,
+             "! <p class="shorttext synchronized">Skip count</p>
+             "! <p>Number of skipped records</p>
              skip_count       TYPE i,
            END OF ty_monitor_summary.
 
+    "! <p class="shorttext synchronized">Constructor</p>
+    "! <p>Creates a new instance of the monitor with optional logger dependency.
+    "! Uses dependency injection for better testability.</p>
+    "! @parameter io_logger | <p class="shorttext synchronized">Logger instance (optional)</p>
     METHODS:
       constructor
         IMPORTING
           io_logger TYPE REF TO zif_cos_logger OPTIONAL,
 
+      "! <p class="shorttext synchronized">Get monitor data</p>
+      "! <p>Retrieves detailed monitoring data for COS processing
+      "! based on specified selection criteria and date ranges.</p>
+      "! @parameter it_bukrs_range | <p class="shorttext synchronized">Company code range (optional)</p>
+      "! @parameter it_status_range | <p class="shorttext synchronized">Status range (optional)</p>
+      "! @parameter iv_from_date | <p class="shorttext synchronized">From date</p>
+      "! @parameter iv_to_date | <p class="shorttext synchronized">To date</p>
+      "! @parameter iv_include_outbox | <p class="shorttext synchronized">Include outbox data</p>
+      "! @parameter iv_include_audit | <p class="shorttext synchronized">Include audit data</p>
+      "! @parameter iv_errors_only | <p class="shorttext synchronized">Errors only flag</p>
+      "! @parameter rt_data | <p class="shorttext synchronized">Monitor data table</p>
       get_monitor_data
         IMPORTING
           it_bukrs_range    TYPE bukrs_range_t OPTIONAL
@@ -50,6 +109,14 @@ CLASS zcl_cos_monitor DEFINITION
         RETURNING
           VALUE(rt_data) TYPE TABLE OF ty_monitor_data,
 
+      "! <p class="shorttext synchronized">Get monitor summary</p>
+      "! <p>Retrieves aggregated summary statistics for COS processing
+      "! including counts, totals, and status breakdown.</p>
+      "! @parameter it_bukrs_range | <p class="shorttext synchronized">Company code range (optional)</p>
+      "! @parameter it_status_range | <p class="shorttext synchronized">Status range (optional)</p>
+      "! @parameter iv_from_date | <p class="shorttext synchronized">From date</p>
+      "! @parameter iv_to_date | <p class="shorttext synchronized">To date</p>
+      "! @parameter rs_summary | <p class="shorttext synchronized">Monitor summary data</p>
       get_monitor_summary
         IMPORTING
           it_bukrs_range    TYPE bukrs_range_t OPTIONAL
@@ -59,14 +126,28 @@ CLASS zcl_cos_monitor DEFINITION
         RETURNING
           VALUE(rs_summary) TYPE ty_monitor_summary,
 
+      "! <p class="shorttext synchronized">Check user authorization</p>
+      "! <p>Validates that the current user has authorization to access
+      "! monitoring functionality for COS processing.</p>
+      "! @parameter rv_authorized | <p class="shorttext synchronized">True if user is authorized</p>
       check_authorization
         RETURNING
           VALUE(rv_authorized) TYPE abap_bool.
 
   PRIVATE SECTION.
+    "! <p class="shorttext synchronized">Logger instance</p>
+    "! <p>Dependency injected logger for application logging</p>
     DATA:
       mo_logger TYPE REF TO zif_cos_logger.
 
+    "! <p class="shorttext synchronized">Get outbox data</p>
+    "! <p>Retrieves monitoring data from the outbox table
+    "! based on specified selection criteria.</p>
+    "! @parameter it_bukrs_range | <p class="shorttext synchronized">Company code range</p>
+    "! @parameter it_status_range | <p class="shorttext synchronized">Status range</p>
+    "! @parameter iv_from_date | <p class="shorttext synchronized">From date</p>
+    "! @parameter iv_to_date | <p class="shorttext synchronized">To date</p>
+    "! @parameter rt_data | <p class="shorttext synchronized">Outbox monitor data</p>
     METHODS:
       get_outbox_data
         IMPORTING
@@ -77,6 +158,14 @@ CLASS zcl_cos_monitor DEFINITION
         RETURNING
           VALUE(rt_data) TYPE TABLE OF ty_monitor_data,
 
+      "! <p class="shorttext synchronized">Get audit data</p>
+      "! <p>Retrieves monitoring data from the audit table
+      "! based on specified selection criteria.</p>
+      "! @parameter it_bukrs_range | <p class="shorttext synchronized">Company code range</p>
+      "! @parameter it_status_range | <p class="shorttext synchronized">Status range</p>
+      "! @parameter iv_from_date | <p class="shorttext synchronized">From date</p>
+      "! @parameter iv_to_date | <p class="shorttext synchronized">To date</p>
+      "! @parameter rt_data | <p class="shorttext synchronized">Audit monitor data</p>
       get_audit_data
         IMPORTING
           it_bukrs_range  TYPE bukrs_range_t
@@ -86,6 +175,12 @@ CLASS zcl_cos_monitor DEFINITION
         RETURNING
           VALUE(rt_data) TYPE TABLE OF ty_monitor_data,
 
+      "! <p class="shorttext synchronized">Merge monitor data</p>
+      "! <p>Merges outbox and audit data into a single monitor data table
+      "! with proper deduplication and data consolidation.</p>
+      "! @parameter it_outbox_data | <p class="shorttext synchronized">Outbox data table</p>
+      "! @parameter it_audit_data | <p class="shorttext synchronized">Audit data table</p>
+      "! @parameter rt_data | <p class="shorttext synchronized">Merged monitor data</p>
       merge_monitor_data
         IMPORTING
           it_outbox_data TYPE TABLE OF ty_monitor_data
@@ -93,10 +188,19 @@ CLASS zcl_cos_monitor DEFINITION
         RETURNING
           VALUE(rt_data) TYPE TABLE OF ty_monitor_data,
 
+      "! <p class="shorttext synchronized">Filter errors only</p>
+      "! <p>Filters the monitor data to include only error records
+      "! for error-focused monitoring and troubleshooting.</p>
+      "! @parameter ct_data | <p class="shorttext synchronized">Monitor data table (modified)</p>
       filter_errors_only
         CHANGING
           ct_data TYPE TABLE OF ty_monitor_data,
 
+      "! <p class="shorttext synchronized">Calculate summary</p>
+      "! <p>Calculates aggregated summary statistics from monitor data
+      "! including counts, totals, and status breakdown.</p>
+      "! @parameter it_data | <p class="shorttext synchronized">Monitor data table</p>
+      "! @parameter rs_summary | <p class="shorttext synchronized">Calculated summary</p>
       calculate_summary
         IMPORTING
           it_data TYPE TABLE OF ty_monitor_data
