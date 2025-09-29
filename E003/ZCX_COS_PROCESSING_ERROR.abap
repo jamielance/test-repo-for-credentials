@@ -79,7 +79,31 @@ CLASS zcx_cos_processing_error DEFINITION
         "! <p class="shorttext synchronized">Attribute 4</p>
         "! <p>Not used</p>
         attr4 TYPE scx_attrname VALUE '',
-      END OF document_creation_failed.
+      END OF document_creation_failed,
+
+      "! <p class="shorttext synchronized">Feature toggle setup failed error</p>
+      "! <p>Error constant for when feature toggle setup fails
+      "! during TVARVC operations.</p>
+      BEGIN OF feature_toggle_setup_failed,
+        "! <p class="shorttext synchronized">Message class</p>
+        "! <p>Message class for COS errors</p>
+        msgid TYPE symsgid VALUE 'ZCOS',
+        "! <p class="shorttext synchronized">Message number</p>
+        "! <p>Message number for feature toggle setup failed</p>
+        msgno TYPE symsgno VALUE '005',
+        "! <p class="shorttext synchronized">Attribute 1</p>
+        "! <p>Feature name attribute</p>
+        attr1 TYPE scx_attrname VALUE 'FEATURE_NAME',
+        "! <p class="shorttext synchronized">Attribute 2</p>
+        "! <p>Not used</p>
+        attr2 TYPE scx_attrname VALUE '',
+        "! <p class="shorttext synchronized">Attribute 3</p>
+        "! <p>Not used</p>
+        attr3 TYPE scx_attrname VALUE '',
+        "! <p class="shorttext synchronized">Attribute 4</p>
+        "! <p>Not used</p>
+        attr4 TYPE scx_attrname VALUE '',
+      END OF feature_toggle_setup_failed.
 
     "! <p class="shorttext synchronized">GUID</p>
     "! <p>GUID of the outbox entry that caused the error</p>
@@ -93,7 +117,10 @@ CLASS zcx_cos_processing_error DEFINITION
       product_code   TYPE char20,
       "! <p class="shorttext synchronized">Error message</p>
       "! <p>Detailed error message for the exception</p>
-      error_message  TYPE string.
+      error_message  TYPE string,
+      "! <p class="shorttext synchronized">Feature name</p>
+      "! <p>Feature name that caused the error</p>
+      feature_name   TYPE string.
 
     "! <p class="shorttext synchronized">Constructor</p>
     "! <p>Creates a new COS processing error exception with

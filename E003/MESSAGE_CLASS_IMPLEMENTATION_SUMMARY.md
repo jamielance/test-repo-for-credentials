@@ -4,6 +4,8 @@
 
 This document summarizes the implementation of a comprehensive message class system for the COS Auto Posting solution, replacing all literal error messages with structured message handling.
 
+**Important Note:** A Message Class in ABAP is a **table of defined texts** for holding error messages, not a code class. It stores predefined message texts that can be referenced by message number and ID.
+
 ## Files Created/Modified
 
 ### 1. New Message Class Files

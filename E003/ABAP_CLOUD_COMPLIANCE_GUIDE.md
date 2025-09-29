@@ -4,6 +4,11 @@
 
 This solution has been refactored to follow ABAP Cloud best practices, prioritizing **CDS VDM (Virtual Data Model) first, table second** approach. This ensures compatibility with SAP S/4HANA Cloud and maintains clean-core extensibility principles.
 
+## 📝 **Important ABAP Concepts**
+
+### **Message Class**
+A Message Class in ABAP is a **table of defined texts** for holding error messages, not a code class. It stores predefined message texts that can be referenced by message number and ID. This is used throughout the solution for consistent error messaging.
+
 ## 📋 **ABAP Cloud Compliance Status**
 
 ### ✅ **Compliant Areas**
