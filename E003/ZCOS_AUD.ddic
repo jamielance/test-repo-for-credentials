@@ -15,9 +15,9 @@ define table zcos_aud {
   belnr_src             : belnr_d not null;
   posted_at             : timestampl;
   posted_by             : syuname;
+  @Semantics.amount.currencyCode : 't001.waers'
   cos_amount            : dmbtr;
-  @Semantics.amount.currencyCode : 'cos_amount_currency'
-  cos_amount_currency   : waers not null default 'GBP';
+  cos_amount_currency   : waers not null;
   status                : char1;
   reversal_doc          : belnr_d;
   reversal_gjahr        : gjahr;

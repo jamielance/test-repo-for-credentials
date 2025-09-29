@@ -14,11 +14,11 @@ define table zcos_outbox {
   belnr_src             : belnr_d not null;
   trigger_gl            : saknr not null;
   product_code          : char20 not null;
+  @Semantics.amount.currencyCode : 't001.waers'
   total_charge          : dmbtr;
-  @Semantics.amount.currencyCode : 'total_charge_currency'
   total_charge_currency : waers not null;
+  @Semantics.amount.currencyCode : 't001.waers'
   cos_amount            : dmbtr;
-  @Semantics.amount.currencyCode : 'cos_amount_currency'
   cos_amount_currency   : waers not null;
   created_at            : timestampl;
   processed_at          : timestampl;
