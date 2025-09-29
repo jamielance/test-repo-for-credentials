@@ -15,6 +15,7 @@ CLASS zcl_cos_monitor DEFINITION
              gjahr             TYPE gjahr,
              belnr_cos         TYPE belnr_d,
              cos_amount        TYPE dmbtr,
+             cos_amount_currency TYPE waers,
              status            TYPE char1,
              posted_at         TYPE timestampl,
              posted_by         TYPE syuname,
@@ -200,7 +201,7 @@ CLASS zcl_cos_monitor IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_audit_data.
-    SELECT guid, bukrs, gjahr, belnr_cos, belnr_src, cos_amount, 
+    SELECT guid, bukrs, gjahr, belnr_cos, belnr_src, cos_amount, cos_amount_currency,
            status, posted_at, posted_by, reversal_doc, reversal_gjahr
       FROM zcos_aud INTO TABLE @DATA(lt_audit)
       WHERE bukrs IN @it_bukrs_range
@@ -216,6 +217,7 @@ CLASS zcl_cos_monitor IMPLEMENTATION.
         belnr_cos = ls_audit-belnr_cos
         gjahr = ls_audit-gjahr
         cos_amount = ls_audit-cos_amount
+        cos_amount_currency = ls_audit-cos_amount_currency
         status = ls_audit-status
         posted_at = ls_audit-posted_at
         posted_by = ls_audit-posted_by

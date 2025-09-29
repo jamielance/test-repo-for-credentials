@@ -1,0 +1,20 @@
+@EndUserText.label: '1099/WHT determination by Invoice Category'
+@AccessControl.authorizationCheck: #CHECK
+@OData.publish: true
+@Metadata.ignorePropagatedAnnotations: true
+@Metadata.allowExtensions: true
+@Search.searchable: true
+define view entity ZC_WhtDetermination
+  as select from ZINV_CAT_1099
+{
+  key bukrs          as CompanyCode,
+  key inv_cat        as InvoiceCategory,
+      whttype        as WithholdingTaxType,
+      whtcode        as WithholdingTaxCode,
+      validfrom      as ValidFrom,
+      validto        as ValidTo,
+      isactive       as IsActive,
+      last_changed_at as LastChangedAt
+}
+where isactive = 'X'
+  and current_date between validfrom and coalesce(validto, '9999-12-31')

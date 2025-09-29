@@ -1,0 +1,23 @@
+@EndUserText.label: 'Bank determination by Invoice Category'
+@AccessControl.authorizationCheck: #CHECK
+@OData.publish: true
+@Metadata.ignorePropagatedAnnotations: true
+@Metadata.allowExtensions: true
+@Search.searchable: true
+define view entity ZC_BankDetermination
+  as select from ZINV_CAT_BANK
+{
+  key bukrs          as CompanyCode,
+  key inv_cat        as InvoiceCategory,
+  key paymeth        as PaymentMethod,
+      hbkid          as HouseBank,
+      hktid          as HouseBankAccount,
+      bvtyp          as PartnerBankType,
+      paymentid      as PaymentID,
+      validfrom      as ValidFrom,
+      validto        as ValidTo,
+      isactive       as IsActive,
+      last_changed_at as LastChangedAt
+}
+where isactive = 'X'
+  and current_date between validfrom and coalesce(validto, '9999-12-31')

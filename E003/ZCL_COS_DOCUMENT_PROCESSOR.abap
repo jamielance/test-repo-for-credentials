@@ -303,6 +303,8 @@ CLASS zcl_cos_document_processor IMPLEMENTATION.
     ls_outbox-trigger_gl = iv_trigger_gl.
     ls_outbox-product_code = iv_product_code.
     ls_outbox-total_charge = iv_total_charge.
+    ls_outbox-total_charge_currency = 'GBP'. " Default currency
+    ls_outbox-cos_amount_currency = 'GBP'. " Default currency
     ls_outbox-created_at = cl_abap_tstmp=>utc2tstmp( cl_abap_tstmp=>get_utc( ) ).
     ls_outbox-status = 'P'. " Pending
     

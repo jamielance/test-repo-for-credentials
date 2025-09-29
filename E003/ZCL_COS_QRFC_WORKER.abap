@@ -130,6 +130,7 @@ CLASS zcl_cos_qrfc_worker DEFINITION
           iv_gjahr      TYPE gjahr
           iv_belnr      TYPE belnr_d
           iv_cos_amount TYPE dmbtr
+          iv_cos_currency TYPE waers
           iv_belnr_cos  TYPE belnr_d
           iv_gjahr_cos  TYPE gjahr
         RETURNING
@@ -249,6 +250,7 @@ CLASS zcl_cos_qrfc_worker IMPLEMENTATION.
             iv_gjahr = iv_gjahr
             iv_belnr = iv_belnr
             iv_cos_amount = lv_amount
+            iv_cos_currency = ls_outbox-cos_amount_currency
             iv_belnr_cos = rv_result-cos_document
             iv_gjahr_cos = rv_result-cos_year
           ).
@@ -432,7 +434,7 @@ CLASS zcl_cos_qrfc_worker IMPLEMENTATION.
     APPEND ls_accountgl TO lt_accountgl.
 
     ls_currencyamount-itemno_acc = '1'.
-    ls_currencyamount-currency = c_currency.
+    ls_currencyamount-currency = iv_outbox-total_charge_currency.
     ls_currencyamount-amt_doccur = iv_cos_amount.
     APPEND ls_currencyamount TO lt_currencyamount.
 
@@ -443,7 +445,7 @@ CLASS zcl_cos_qrfc_worker IMPLEMENTATION.
     APPEND ls_accountgl TO lt_accountgl.
 
     ls_currencyamount-itemno_acc = '2'.
-    ls_currencyamount-currency = c_currency.
+    ls_currencyamount-currency = iv_outbox-total_charge_currency.
     ls_currencyamount-amt_doccur = -iv_cos_amount.
     APPEND ls_currencyamount TO lt_currencyamount.
 
@@ -494,6 +496,7 @@ CLASS zcl_cos_qrfc_worker IMPLEMENTATION.
     ls_audit-posted_at = cl_abap_tstmp=>utc2tstmp( cl_abap_tstmp=>get_utc( ) ).
     ls_audit-posted_by = sy-uname.
     ls_audit-cos_amount = iv_cos_amount.
+    ls_audit-cos_amount_currency = iv_cos_currency.
     ls_audit-status = 'P'.
 
     INSERT zcos_aud FROM ls_audit.

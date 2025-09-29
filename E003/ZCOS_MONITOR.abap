@@ -98,7 +98,7 @@ FORM display_results
              ls_data-belnr_src,
              ls_data-gjahr,
              ls_data-belnr_cos,
-             ls_data-cos_amount CURRENCY 'GBP',
+             ls_data-cos_amount CURRENCY ls_data-cos_amount_currency,
              ls_data-status,
              ls_data-posted_at,
              ls_data-posted_by.
