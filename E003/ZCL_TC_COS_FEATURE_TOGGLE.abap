@@ -67,6 +67,7 @@ CLASS zcl_tc_cos_feature_toggle IMPLEMENTATION.
     ).
 
     " Verify TVARVC entry was created
+    " Note: TVARVC has no standard VDM view, using direct table access
     SELECT SINGLE low FROM tvarvc
       INTO @DATA(lv_value)
       WHERE name = @lv_feature_name.
@@ -117,6 +118,7 @@ CLASS zcl_tc_cos_feature_toggle IMPLEMENTATION.
     ).
 
     " Verify TVARVC entry was updated
+    " Note: TVARVC has no standard VDM view, using direct table access
     SELECT SINGLE low FROM tvarvc
       INTO @DATA(lv_value)
       WHERE name = @lv_feature_name.

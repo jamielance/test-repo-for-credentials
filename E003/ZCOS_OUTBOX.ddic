@@ -9,10 +9,17 @@
 define table zcos_outbox {
   key client            : mandt not null;
   key guid              : sysuuid_x16 not null;
-  bukrs                 : bukrs not null;
+  bukrs                 : bukrs not null
+    foreign key [0..1,1..1] t001
+      references t001 on zcos_outbox.bukrs = t001.bukrs
+      and zcos_outbox.client = t001.mandt;
   gjahr                 : gjahr not null;
   belnr_src             : belnr_d not null;
-  trigger_gl            : saknr not null;
+  trigger_gl            : saknr not null
+    foreign key [0..1,1..1] ska1_trigger
+      references ska1 on zcos_outbox.trigger_gl = ska1.saknr
+      and zcos_outbox.bukrs = ska1.bukrs
+      and zcos_outbox.client = ska1.mandt;
   product_code          : char20 not null;
   @Semantics.amount.currencyCode : 't001.waers'
   total_charge          : dmbtr;
@@ -24,4 +31,11 @@ define table zcos_outbox {
   processed_at          : timestampl;
   status                : char1;
   error_message         : char255;
+
+  // Additional foreign key for mapping validation
+  foreign key [0..1,1..1] zcos_map
+    references zcos_map on zcos_outbox.bukrs = zcos_map.bukrs
+    and zcos_outbox.trigger_gl = zcos_map.trigger_gl
+    and zcos_outbox.product_code = zcos_map.product_code
+    and zcos_outbox.client = zcos_map.client;
 }

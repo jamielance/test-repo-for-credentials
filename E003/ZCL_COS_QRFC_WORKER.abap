@@ -497,6 +497,7 @@ CLASS zcl_cos_qrfc_worker IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD check_duplicate_processing.
+    " Note: ZCOS_AUD is custom table, no standard VDM view available
     SELECT SINGLE client FROM zcos_aud
       INTO @DATA(lv_client)
       WHERE guid = @iv_guid.
@@ -505,6 +506,7 @@ CLASS zcl_cos_qrfc_worker IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_cos_mapping.
+    " Note: ZCOS_MAP is custom table, no standard VDM view available
     SELECT SINGLE bukrs, trigger_gl, product_code, sales_gl, cos_gl, margin_pct
       FROM zcos_map
       INTO CORRESPONDING FIELDS OF @rs_mapping

@@ -8,17 +8,36 @@
 @AbapCatalog.dataMaintenance : #RESTRICTED
 define table zcos_map {
   key client            : mandt not null;
-  key bukrs             : bukrs not null;
-  key trigger_gl        : saknr not null;
+  key bukrs             : bukrs not null
+    foreign key [0..1,1..1] t001
+      references t001 on zcos_map.bukrs = t001.bukrs
+      and zcos_map.client = t001.mandt;
+  key trigger_gl        : saknr not null
+    foreign key [0..1,1..1] ska1_trigger
+      references ska1 on zcos_map.trigger_gl = ska1.saknr
+      and zcos_map.bukrs = ska1.bukrs
+      and zcos_map.client = ska1.mandt;
   key product_code      : char20 not null;
   key valid_from        : dats not null;
   key valid_to          : dats not null;
-  sales_gl              : saknr not null;
-  cos_gl                : saknr not null;
+  sales_gl              : saknr not null
+    foreign key [0..1,1..1] ska1_sales
+      references ska1 on zcos_map.sales_gl = ska1.saknr
+      and zcos_map.bukrs = ska1.bukrs
+      and zcos_map.client = ska1.mandt;
+  cos_gl                : saknr not null
+    foreign key [0..1,1..1] ska1_cos
+      references ska1 on zcos_map.cos_gl = ska1.saknr
+      and zcos_map.bukrs = ska1.bukrs
+      and zcos_map.client = ska1.mandt;
   margin_pct            : dec5_2;
-  created_by            : syuname;
+  created_by            : syuname
+    foreign key [0..1,1..1] usr21_created
+      references usr21 on zcos_map.created_by = usr21.bname;
   created_at            : timestampl;
-  changed_by            : syuname;
+  changed_by            : syuname
+    foreign key [0..1,1..1] usr21_changed
+      references usr21 on zcos_map.changed_by = usr21.bname;
   changed_at            : timestampl;
   deleted               : abap_bool;
 }

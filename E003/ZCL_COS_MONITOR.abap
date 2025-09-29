@@ -282,6 +282,7 @@ CLASS zcl_cos_monitor IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_outbox_data.
+    " Note: ZCOS_OUTBOX is custom table, no standard VDM view available
     SELECT guid, bukrs, gjahr, belnr_src, trigger_gl, product_code, 
            total_charge, status, error_message, created_at, processed_at
       FROM zcos_outbox INTO TABLE @DATA(lt_outbox)
@@ -305,6 +306,7 @@ CLASS zcl_cos_monitor IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_audit_data.
+    " Note: ZCOS_AUD is custom table, no standard VDM view available
     SELECT guid, bukrs, gjahr, belnr_cos, belnr_src, cos_amount, cos_amount_currency,
            status, posted_at, posted_by, reversal_doc, reversal_gjahr
       FROM zcos_aud INTO TABLE @DATA(lt_audit)

@@ -324,6 +324,7 @@ CLASS zcl_cos_document_processor IMPLEMENTATION.
     DATA: lv_e008_status TYPE char1.
     
     " Placeholder - implement based on E008's validation result storage
+    " Note: ZCOS_E008_STATUS is custom table, no standard VDM view available
     SELECT SINGLE e008_status FROM zcos_e008_status INTO @lv_e008_status
       WHERE bukrs = @iv_bukrs
         AND gjahr = @iv_gjahr
@@ -337,6 +338,7 @@ CLASS zcl_cos_document_processor IMPLEMENTATION.
     LOOP AT it_accit INTO DATA(ls_accit).
       IF ls_accit-hkont IS NOT INITIAL.
         " Check if this is a trigger G/L
+        " Note: ZCOS_MAP is custom table, no standard VDM view available
         SELECT SINGLE trigger_gl FROM zcos_map
           INTO @rv_trigger_gl
           WHERE trigger_gl = @ls_accit-hkont

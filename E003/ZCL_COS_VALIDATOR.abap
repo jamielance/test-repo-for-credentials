@@ -31,9 +31,9 @@ CLASS zcl_cos_validator IMPLEMENTATION.
       RETURN.
     ENDIF.
 
-    " Check if company code exists
-    SELECT SINGLE bukrs FROM t001 INTO @DATA(lv_bukrs)
-      WHERE bukrs = @iv_bukrs.
+    " Check if company code exists using standard VDM
+    SELECT SINGLE CompanyCode FROM I_CompanyCode INTO @DATA(lv_company_code)
+      WHERE CompanyCode = @iv_bukrs.
     
     IF sy-subrc <> 0.
       ls_message = zcl_cos_message_utility=>get_company_code_not_exists_error( iv_bukrs ).
@@ -127,9 +127,9 @@ CLASS zcl_cos_validator IMPLEMENTATION.
       RETURN.
     ENDIF.
 
-    " Check if G/L account exists
-    SELECT SINGLE saknr FROM ska1 INTO @DATA(lv_saknr)
-      WHERE saknr = @iv_saknr.
+    " Check if G/L account exists using standard VDM
+    SELECT SINGLE GLAccount FROM I_GLAccount INTO @DATA(lv_gl_account)
+      WHERE GLAccount = @iv_saknr.
     
     IF sy-subrc <> 0.
       ls_message = zcl_cos_message_utility=>get_gl_account_not_exists_error( iv_saknr ).

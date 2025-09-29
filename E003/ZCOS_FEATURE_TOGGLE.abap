@@ -220,6 +220,7 @@ CLASS zcl_cos_feature_toggle IMPLEMENTATION.
     ENDIF.
 
     " Check if entry already exists
+    " Note: TVARVC has no standard VDM view, using direct table access
     SELECT SINGLE name FROM tvarvc
       INTO @DATA(lv_name)
       WHERE name = @iv_feature_name.
@@ -324,6 +325,7 @@ CLASS zcl_cos_feature_toggle IMPLEMENTATION.
 
   METHOD read_tvarvc_entry.
     " Read TVARVC entry
+    " Note: TVARVC has no standard VDM view, using direct table access
     SELECT SINGLE * FROM tvarvc
       INTO @rs_tvarvc
       WHERE name = @iv_feature_name.
