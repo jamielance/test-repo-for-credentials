@@ -1,0 +1,21 @@
+*&---------------------------------------------------------------------*
+*& CDS View Entity: ZC_WexReleaseResult
+*& Purpose: Result structure for ReleaseIfMatch action
+*& Namespace: ZHLM
+*& Package: ZHLM_AP_WEX
+*&---------------------------------------------------------------------*
+
+@EndUserText.label : 'WEX Release Result'
+@AbapCatalog.enhancementCategory : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #C
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define view entity ZC_WexReleaseResult
+  as projection on ZC_WexOpenInvoices
+{
+  key CompanyCode,
+  key SupplierInvoice,
+  key FiscalYear,
+      Unblocked,
+      Message
+}

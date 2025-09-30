@@ -1,0 +1,21 @@
+*&---------------------------------------------------------------------*
+*& Service Definition: API_FILE_TRANSFER
+*& Description: OData Service for File Transfer Operations
+*& Purpose: SFTP file operations with security and audit trail
+*&---------------------------------------------------------------------*
+
+@EndUserText.label: 'File Transfer Service'
+@OData.publish: true
+@OData.serviceVersion: '1.0'
+@OData.serviceType: 'ODATA_V4_CSDL'
+
+define service API_FILE_TRANSFER {
+  expose ZC_FILE_TRANSFER_AUDIT as FileTransferAudit;
+  expose ZC_FILE_TRANSFER_REQUEST as FileTransferRequest;
+  
+  " File transfer operations
+  expose ZCL_FILE_TRANSFER_SERVICE as FileTransferService;
+  
+  " Utility operations
+  expose ZC_FILE_SYSTEM_INFO as FileSystemInfo;
+}

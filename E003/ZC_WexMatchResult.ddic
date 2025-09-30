@@ -1,0 +1,23 @@
+*&---------------------------------------------------------------------*
+*& CDS View Entity: ZC_WexMatchResult
+*& Purpose: Result structure for FindMatch action
+*& Namespace: ZHLM
+*& Package: ZHLM_AP_WEX
+*&---------------------------------------------------------------------*
+
+@EndUserText.label : 'WEX Match Result'
+@AbapCatalog.enhancementCategory : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #C
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define view entity ZC_WexMatchResult
+  as projection on ZC_WexOpenInvoices
+{
+  key CompanyCode,
+  key SupplierInvoice,
+  key FiscalYear,
+      InvoiceGrossAmount,
+      DocumentCurrency,
+      MatchFound,
+      Message
+}

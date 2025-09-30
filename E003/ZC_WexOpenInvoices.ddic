@@ -1,0 +1,48 @@
+*&---------------------------------------------------------------------*
+*& CDS View Entity: ZC_WexOpenInvoices
+*& Purpose: Read model for blocked WEX invoices
+*& Namespace: ZHLM
+*& Package: ZHLM_AP_WEX
+*&---------------------------------------------------------------------*
+
+@EndUserText.label : 'Open WEX Invoices (Blocked)'
+@AccessControl.authorizationCheck : #CHECK
+@OData.publish : true
+@AbapCatalog.enhancementCategory : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #C
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define view entity ZC_WexOpenInvoices
+  as select from REPLACE_ME_SOURCE_VIEW as si
+  association [0..1] to ZWEX_CFG as _config on $projection.CompanyCode = _config.company_code
+{
+  key si.CompanyCode,
+  key si.SupplierInvoice,
+  key si.FiscalYear,
+      si.DocumentCurrency,
+      si.InvoiceGrossAmount,
+      si.PaymentBlockingReason,
+      si.Reference,
+      si.ZZ1_ThirdPartyRef,
+      si.PostingDate,
+      
+  /* Configuration association for tolerance lookup */
+  _config
+}
+where
+  si.PaymentBlockingReason = 'A' and
+  si.ZZ1_InvoiceCategory = '027'
+
+/* 
+ * Performance Note: 
+ * Ensure secondary index exists on underlying source view:
+ * - CompanyCode (BUKRS)
+ * - Reference (for WEX UUID lookup)
+ * - PaymentBlockingReason
+ * - ZZ1_InvoiceCategory
+ * 
+ * Source View Replacement:
+ * Replace 'REPLACE_ME_SOURCE_VIEW' with actual released supplier invoice view
+ * Common options: I_SupplierInvoice, I_SupplierInvoiceItem, etc.
+ * Check your system's available consumption views in SE80/ADT
+ */

@@ -1,0 +1,45 @@
+*&---------------------------------------------------------------------*
+*& Service Definition: API_WEX_DOCUMENT_QUERY
+*& Purpose: Simple OData service for WEX document identification
+*& Namespace: ZHLM
+*& Package: ZHLM_AP_WEX
+*&---------------------------------------------------------------------*
+
+@EndUserText.label : 'WEX Document Query Service'
+@OData.publish : true
+@AbapCatalog.enhancementCategory : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #C
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define service API_WEX_DOCUMENT_QUERY {
+  expose ZC_WEX_DOCUMENTS_FOR_RELEASE as WexDocuments;
+}
+
+/* 
+ * Simple OData V2 Service for WEX Document Identification
+ * 
+ * Usage Examples:
+ * 
+ * 1. Get all WEX documents for a company:
+ * GET .../API_WEX_DOCUMENT_QUERY/WexDocuments?$filter=CompanyCode eq '5100'
+ * 
+ * 2. Find specific document by WEX UUID:
+ * GET .../API_WEX_DOCUMENT_QUERY/WexDocuments?$filter=WexUUID eq '8PE3911J657XDN28LD'
+ * 
+ * 3. Find documents by amount and currency:
+ * GET .../API_WEX_DOCUMENT_QUERY/WexDocuments?$filter=CompanyCode eq '5100' and DocumentAmount eq 46.84 and DocumentCurrencyCode eq 'USD'
+ * 
+ * 4. Get documents within amount range (tolerance):
+ * GET .../API_WEX_DOCUMENT_QUERY/WexDocuments?$filter=CompanyCode eq '5100' and DocumentAmount ge 40 and DocumentAmount le 50
+ * 
+ * 5. Complex query for reconciliation:
+ * GET .../API_WEX_DOCUMENT_QUERY/WexDocuments?$filter=CompanyCode eq '5100' and WexUUID eq '8PE3911J657XDN28LD' and DocumentAmount eq 46.84 and DocumentCurrencyCode eq 'USD'
+ * 
+ * CPI Integration:
+ * - CPI can query this service to identify documents
+ * - Use OData filters to find exact matches
+ * - Implement tolerance logic in CPI if needed
+ * - Use standard Supplier Invoice API to release holds
+ * 
+ * No RAP complexity - just simple read-only OData queries!
+ */

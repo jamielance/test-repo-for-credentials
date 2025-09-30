@@ -1,0 +1,57 @@
+*&---------------------------------------------------------------------*
+*& Table: ZWEX_CFG
+*& Purpose: Configuration table for WEX reconciliation
+*& Namespace: ZHLM
+*& Package: ZHLM_AP_WEX
+*&---------------------------------------------------------------------*
+
+@EndUserText.label : 'WEX Configuration'
+@AbapCatalog.enhancementCategory : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #C
+@AbapCatalog.dataMaintenance : #RESTRICTED
+@AbapCatalog.changeLog : #ALLOWED
+define table zwex_cfg {
+  key client            : mandt not null;
+  key company_code      : bukrs not null;
+  amount_tolerance      : curr13_2;
+  currency             : waers;
+  active               : flag;
+  allow_internal_unblock : flag;
+  updated_at           : timestampl;
+  
+  @EndUserText.label : 'Client'
+  @AbapCatalog.enhancementCategory : #NOT_EXTENSIBLE
+  @AbapCatalog.changeLog : #ALLOWED
+  client;
+  
+  @EndUserText.label : 'Company Code'
+  @AbapCatalog.enhancementCategory : #NOT_EXTENSIBLE
+  @AbapCatalog.changeLog : #ALLOWED
+  company_code;
+  
+  @EndUserText.label : 'Amount Tolerance'
+  @AbapCatalog.enhancementCategory : #NOT_EXTENSIBLE
+  @AbapCatalog.changeLog : #ALLOWED
+  amount_tolerance;
+  
+  @EndUserText.label : 'Currency'
+  @AbapCatalog.enhancementCategory : #NOT_EXTENSIBLE
+  @AbapCatalog.changeLog : #ALLOWED
+  currency;
+  
+  @EndUserText.label : 'Active'
+  @AbapCatalog.enhancementCategory : #NOT_EXTENSIBLE
+  @AbapCatalog.changeLog : #ALLOWED
+  active;
+  
+  @EndUserText.label : 'Allow Internal Unblock'
+  @AbapCatalog.enhancementCategory : #NOT_EXTENSIBLE
+  @AbapCatalog.changeLog : #ALLOWED
+  allow_internal_unblock;
+  
+  @EndUserText.label : 'Updated At'
+  @AbapCatalog.enhancementCategory : #NOT_EXTENSIBLE
+  @AbapCatalog.changeLog : #ALLOWED
+  updated_at;
+}

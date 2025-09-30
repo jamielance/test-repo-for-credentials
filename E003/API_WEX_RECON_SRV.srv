@@ -1,0 +1,56 @@
+*&---------------------------------------------------------------------*
+*& Service Definition: API_WEX_RECON_SRV
+*& Purpose: OData service for WEX reconciliation
+*& Namespace: ZHLM
+*& Package: ZHLM_AP_WEX
+*&---------------------------------------------------------------------*
+
+@EndUserText.label : 'WEX Reconciliation Service'
+@OData.publish : true
+@AbapCatalog.enhancementCategory : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #C
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define service API_WEX_RECON_SRV {
+  expose ZC_WexOpenInvoices as WexOpenInvoices;
+  expose ZC_WexMatchResult as WexMatchResult;
+  expose ZC_WexReleaseResult as WexReleaseResult;
+}
+
+/* 
+ * Service Registration Names:
+ * - ZC_WEXOPENINVOICES_CDS
+ * - API_WEX_RECON_SRV
+ * 
+ * OData V2 Binding:
+ * - Entity Set: WexOpenInvoices (read-only)
+ * - Actions: FindMatch, ReleaseIfMatch
+ * 
+ * Usage Examples:
+ * 
+ * 1. FindMatch Action:
+ * POST .../API_WEX_RECON_SRV/FindMatch
+ * {
+ *   "CompanyCode": "5100",
+ *   "WexUUID": "8PE3911J657XDN28LD",
+ *   "Amount": "46.84",
+ *   "Currency": "USD",
+ *   "Tolerance": "0.00"
+ * }
+ * 
+ * 2. ReleaseIfMatch Action:
+ * POST .../API_WEX_RECON_SRV/ReleaseIfMatch
+ * {
+ *   "CompanyCode": "5100",
+ *   "WexUUID": "8PE3911J657XDN28LD",
+ *   "Amount": "46.84",
+ *   "Currency": "USD",
+ *   "Tolerance": "0.00"
+ * }
+ * 
+ * 3. CPI PATCH (when ALLOW_INTERNAL_UNBLOCK = space):
+ * PATCH /sap/opu/odata/sap/API_SUPPLIERINVOICE_PROCESS_SRV/A_SupplierInvoice(SupplierInvoice='<DocID>',FiscalYear='<YYYY>')
+ * {
+ *   "PaymentBlockingReason": ""
+ * }
+ */

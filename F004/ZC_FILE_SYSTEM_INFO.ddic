@@ -1,0 +1,77 @@
+*&---------------------------------------------------------------------*
+*& CDS View Entity: ZC_FILE_SYSTEM_INFO
+*& Purpose: File system information and statistics
+*& Namespace: ZFILE
+*& Package: ZFILE_AP_TRANSFER
+*&---------------------------------------------------------------------*
+
+@EndUserText.label : 'File System Information'
+@AccessControl.authorizationCheck : #CHECK
+@OData.publish : true
+@AbapCatalog.enhancementCategory : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #C
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define view entity ZC_FILE_SYSTEM_INFO
+  as select from zfile_system_info
+{
+  key system_id,
+      client,
+      directory_path,
+      total_space_mb,
+      used_space_mb,
+      free_space_mb,
+      file_count,
+      last_updated,
+      status,
+      
+  /* Calculated fields */
+  case 
+    when ( used_space_mb / total_space_mb ) * 100 > 90 then 'CRITICAL'
+    when ( used_space_mb / total_space_mb ) * 100 > 75 then 'WARNING'
+    else 'OK'
+  end as SpaceStatus,
+  
+  ( used_space_mb / total_space_mb ) * 100 as SpaceUsagePercent,
+  
+  total_space_mb - used_space_mb as AvailableSpaceMB,
+  
+  case 
+    when status = 'A' then 'Active'
+    when status = 'I' then 'Inactive'
+    when status = 'E' then 'Error'
+    else 'Unknown'
+  end as StatusText,
+  
+  /* File count categories */
+  case 
+    when file_count > 10000 then 'HIGH'
+    when file_count > 1000 then 'MEDIUM'
+    else 'LOW'
+  end as FileCountCategory
+
+}
+where
+  status = 'A' " Only active directories
+
+/* 
+ * This view provides file system information:
+ * 
+ * Key Features:
+ * - Directory space monitoring
+ * - File count statistics
+ * - Space usage alerts
+ * - System health indicators
+ * 
+ * OData Query Examples:
+ * - Critical space: $filter=SpaceStatus eq 'CRITICAL'
+ * - Warning space: $filter=SpaceStatus eq 'WARNING'
+ * - High file count: $filter=FileCountCategory eq 'HIGH'
+ * - Specific directory: $filter=directory_path eq '/path/to/dir'
+ * 
+ * Monitoring Use Cases:
+ * - Proactive space management
+ * - Performance optimization
+ * - Capacity planning
+ * - System health monitoring
+ */

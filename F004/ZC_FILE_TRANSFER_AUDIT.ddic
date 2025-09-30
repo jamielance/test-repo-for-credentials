@@ -1,0 +1,75 @@
+*&---------------------------------------------------------------------*
+*& CDS View Entity: ZC_FILE_TRANSFER_AUDIT
+*& Purpose: Audit trail for file transfer operations
+*& Namespace: ZFILE
+*& Package: ZFILE_AP_TRANSFER
+*&---------------------------------------------------------------------*
+
+@EndUserText.label : 'File Transfer Audit Trail'
+@AccessControl.authorizationCheck : #CHECK
+@OData.publish : true
+@AbapCatalog.enhancementCategory : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #C
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define view entity ZC_FILE_TRANSFER_AUDIT
+  as select from zfile_transfer_audit
+{
+  key guid,
+      client,
+      operation_id,
+      source_file,
+      target_file,
+      operation_type,
+      success_flag,
+      error_code,
+      error_message,
+      created_by,
+      created_at,
+      operation_timestamp,
+      file_size,
+      processing_time_ms,
+      
+  /* Calculated fields */
+  case 
+    when success_flag = 'X' then 'SUCCESS'
+    else 'FAILED'
+  end as StatusText,
+  
+  case 
+    when operation_type = 'MOVE' then 'Move File'
+    when operation_type = 'COPY' then 'Copy File'
+    when operation_type = 'DELETE' then 'Delete File'
+    else 'Unknown'
+  end as OperationText,
+  
+  /* Time-based fields for filtering */
+  cast(operation_timestamp as abap.dats) as OperationDate,
+  cast(operation_timestamp as abap.tims) as OperationTime
+
+}
+where
+  operation_timestamp >= add_days( current_date, -90 ) " Last 90 days
+
+/* 
+ * This view provides audit trail for file transfer operations:
+ * 
+ * Key Features:
+ * - Tracks all file transfer operations (MOVE, COPY, DELETE)
+ * - Includes success/failure status and error details
+ * - Provides performance metrics (processing time)
+ * - Supports filtering by date range (last 90 days)
+ * - Calculated fields for user-friendly display
+ * 
+ * OData Query Examples:
+ * - Recent operations: $filter=OperationDate ge 2024-01-01
+ * - Failed operations: $filter=success_flag eq false
+ * - Move operations: $filter=operation_type eq 'MOVE'
+ * - By user: $filter=created_by eq 'USER123'
+ * - Performance issues: $filter=processing_time_ms gt 5000
+ * 
+ * Security:
+ * - Authorization check enabled
+ * - Read-only access for audit purposes
+ * - Sensitive file paths are logged but access controlled
+ */

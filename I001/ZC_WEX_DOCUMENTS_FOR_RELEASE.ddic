@@ -1,0 +1,88 @@
+*&---------------------------------------------------------------------*
+*& CDS View Entity: ZC_WEX_DOCUMENTS_FOR_RELEASE
+*& Purpose: Simple read-only view to identify WEX documents eligible for hold removal
+*& Namespace: ZHLM
+*& Package: ZHLM_AP_WEX
+*&---------------------------------------------------------------------*
+
+@EndUserText.label : 'WEX Documents Eligible for Hold Release'
+@AccessControl.authorizationCheck : #CHECK
+@OData.publish : true
+@AbapCatalog.enhancementCategory : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #C
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define view entity ZC_WEX_DOCUMENTS_FOR_RELEASE
+  as select from I_SupplierInvoice as si
+  association [0..*] to I_SupplierInvoiceItem as _Items on si.SupplierInvoice = _Items.SupplierInvoice 
+                                                      and si.FiscalYear = _Items.FiscalYear
+                                                      and si.CompanyCode = _Items.CompanyCode
+{
+  key si.CompanyCode,
+  key si.SupplierInvoice,
+  key si.FiscalYear,
+      si.DocumentCurrency,
+      si.InvoiceGrossAmount,
+      si.PaymentBlockingReason,
+      si.Reference,
+      si.PostingDate,
+      si.Supplier,
+      si.SupplierName,
+      
+  /* Association to items for GL Account data */
+  _Items,
+      
+  /* Calculated fields for CPI logic - amount matching is key */
+  case 
+    when si.PaymentBlockingReason = 'A' and exists(select 1 from _Items where ZZ1_InvoiceCategory = '027' and ZZ1_ThirdPartyRef is not initial)
+    then 'ELIGIBLE_FOR_RELEASE'
+    else 'NOT_ELIGIBLE'
+  end as ReleaseStatus,
+  
+  /* WEX UUID from header Reference or first matching item's ZZ1_ThirdPartyRef */
+  case
+    when si.Reference is not initial then si.Reference
+    when exists(select 1 from _Items where ZZ1_ThirdPartyRef is not initial and ZZ1_InvoiceCategory = '027')
+    then (select top 1 ZZ1_ThirdPartyRef from _Items where ZZ1_ThirdPartyRef is not initial and ZZ1_InvoiceCategory = '027')
+    else ''
+  end as WexUUID,
+  
+  /* Amount matching fields for CPI */
+  si.InvoiceGrossAmount as DocumentAmount,
+  si.DocumentCurrency as DocumentCurrencyCode
+
+}
+where
+  si.PaymentBlockingReason = 'A' and
+  exists(select 1 from _Items where ZZ1_InvoiceCategory = '027' and ZZ1_ThirdPartyRef is not initial)
+
+/* 
+ * This view identifies WEX documents eligible for hold release using:
+ * 1. Existing SAP associations (I_SupplierInvoice -> I_SupplierInvoiceItem)
+ * 2. Amount matching as primary criteria for eligibility
+ * 3. WEX category validation (ZZ1_InvoiceCategory = '027') AND WEX UUID present (ZZ1_ThirdPartyRef is not initial)
+ * 
+ * Key Features:
+ * - Uses standard SAP associations for optimal performance
+ * - Focuses on amount matching for CPI reconciliation logic
+ * - Leverages existing indexes on standard views
+ * - Provides both header and item data through associations
+ * 
+ * CPI Query Examples:
+ * - Exact amount match: $filter=CompanyCode eq '5100' and DocumentAmount eq 46.84 and DocumentCurrencyCode eq 'USD'
+ * - Amount range match: $filter=CompanyCode eq '5100' and DocumentAmount ge 40 and DocumentAmount le 50
+ * - WEX UUID match: $filter=WexUUID eq '8PE3911J657XDN28LD'
+ * - Combined criteria: $filter=CompanyCode eq '5100' and WexUUID eq '8PE3911J657XDN28LD' and DocumentAmount eq 46.84
+ * 
+ * Association Benefits:
+ * - Leverages SAP's optimized join logic
+ * - Uses existing secondary indexes
+ * - Provides access to full item details when needed
+ * - Better performance than manual joins
+ * 
+ * Amount Matching Logic:
+ * - CPI compares inbound WEX SUCC amount with DocumentAmount
+ * - Can implement tolerance logic in CPI (e.g., ±0.50)
+ * - Currency must match DocumentCurrencyCode
+ * - Amount matching is the primary eligibility criteria
+ */

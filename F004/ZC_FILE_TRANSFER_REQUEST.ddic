@@ -1,0 +1,99 @@
+*&---------------------------------------------------------------------*
+*& CDS View Entity: ZC_FILE_TRANSFER_REQUEST
+*& Purpose: File transfer request management
+*& Namespace: ZFILE
+*& Package: ZFILE_AP_TRANSFER
+*&---------------------------------------------------------------------*
+
+@EndUserText.label : 'File Transfer Request'
+@AccessControl.authorizationCheck : #CHECK
+@OData.publish : true
+@AbapCatalog.enhancementCategory : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #C
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define view entity ZC_FILE_TRANSFER_REQUEST
+  as select from zfile_transfer_request
+{
+  key request_id,
+      client,
+      source_file,
+      target_directory,
+      operation_type,
+      create_backup,
+      overwrite_existing,
+      status,
+      priority,
+      created_by,
+      created_at,
+      processed_at,
+      error_message,
+      retry_count,
+      max_retries,
+      
+  /* Calculated fields */
+  case 
+    when status = 'P' then 'Pending'
+    when status = 'I' then 'In Progress'
+    when status = 'S' then 'Success'
+    when status = 'F' then 'Failed'
+    when status = 'C' then 'Cancelled'
+    else 'Unknown'
+  end as StatusText,
+  
+  case 
+    when priority = 'H' then 'High'
+    when priority = 'M' then 'Medium'
+    when priority = 'L' then 'Low'
+    else 'Normal'
+  end as PriorityText,
+  
+  case 
+    when operation_type = 'MOVE' then 'Move File'
+    when operation_type = 'COPY' then 'Copy File'
+    when operation_type = 'DELETE' then 'Delete File'
+    else 'Unknown'
+  end as OperationText,
+  
+  /* Time calculations */
+  case 
+    when processed_at is not initial then 
+      cast(processed_at - created_at as abap.tims)
+    else ''
+  end as ProcessingTime,
+  
+  /* Retry status */
+  case 
+    when retry_count >= max_retries then 'Max Retries Reached'
+    when retry_count > 0 then 'Retrying'
+    else 'No Retries'
+  end as RetryStatus
+
+}
+where
+  created_at >= add_days( current_date, -30 ) " Last 30 days
+
+/* 
+ * This view manages file transfer requests:
+ * 
+ * Key Features:
+ * - Request-based file transfer operations
+ * - Priority and retry management
+ * - Status tracking throughout lifecycle
+ * - Performance monitoring
+ * - Batch processing support
+ * 
+ * OData Query Examples:
+ * - Pending requests: $filter=status eq 'P'
+ * - High priority: $filter=priority eq 'H'
+ * - Failed requests: $filter=status eq 'F'
+ * - Recent requests: $filter=created_at ge 2024-01-01
+ * - Retry needed: $filter=retry_count lt max_retries and status eq 'F'
+ * 
+ * Workflow:
+ * 1. Create request (status = 'P')
+ * 2. Process request (status = 'I')
+ * 3. Complete successfully (status = 'S') or fail (status = 'F')
+ * 4. Retry if needed (increment retry_count)
+ * 5. Cancel if max retries reached
+ */
